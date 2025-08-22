@@ -1,0 +1,2 @@
+- this project should always use pnpm instead of npm
+- After making changes we should always update the documentation in docs/
