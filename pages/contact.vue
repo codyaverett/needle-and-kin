@@ -2,9 +2,9 @@
   <div>
     <section class="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-16">
       <div class="container mx-auto px-4 text-center">
-        <h1 class="text-4xl font-bold mb-6">Get In Touch</h1>
+        <h1 class="text-4xl font-bold mb-6">{{ contactInfo?.hero.title }}</h1>
         <p class="text-xl max-w-2xl mx-auto">
-          We'd love to hear from you! Whether you have questions, suggestions, or just want to share your latest creation.
+          {{ contactInfo?.hero.description }}
         </p>
       </div>
     </section>
@@ -14,7 +14,7 @@
         <div class="max-w-4xl mx-auto">
           <div class="grid md:grid-cols-2 gap-12">
             <div>
-              <h2 class="text-3xl font-bold mb-8">Send Us a Message</h2>
+              <h2 class="text-3xl font-bold mb-8">{{ contactInfo?.form.title }}</h2>
               
               <form @submit.prevent="handleSubmit" class="space-y-6">
                 <div>
@@ -55,13 +55,9 @@
                     required
                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors"
                   >
-                    <option value="">Select a subject</option>
-                    <option value="general">General Inquiry</option>
-                    <option value="tutorial">Tutorial Request</option>
-                    <option value="collaboration">Collaboration</option>
-                    <option value="feedback">Feedback</option>
-                    <option value="technical">Technical Support</option>
-                    <option value="other">Other</option>
+                    <option v-for="subject in contactInfo?.form.subjects" :key="subject.value" :value="subject.value">
+                      {{ subject.label }}
+                    </option>
                   </select>
                 </div>
 
@@ -127,69 +123,37 @@
             </div>
 
             <div>
-              <h2 class="text-3xl font-bold mb-8">Other Ways to Connect</h2>
+              <h2 class="text-3xl font-bold mb-8">{{ contactInfo?.contactMethods.title }}</h2>
               
               <div class="space-y-8">
-                <div class="flex items-start space-x-4">
+                <div v-for="method in contactInfo?.contactMethods.methods" :key="method.title" class="flex items-start space-x-4">
                   <div class="bg-purple-100 w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0">
-                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg v-if="method.icon === 'email'" class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                     </svg>
-                  </div>
-                  <div>
-                    <h3 class="text-xl font-semibold mb-2">Email Us</h3>
-                    <p class="text-gray-600 mb-2">For general inquiries and support</p>
-                    <a href="mailto:hello@needleandkin.com" class="text-purple-600 hover:text-purple-800 font-medium">
-                      hello@needleandkin.com
-                    </a>
-                  </div>
-                </div>
-
-                <div class="flex items-start space-x-4">
-                  <div class="bg-purple-100 w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0">
-                    <svg class="w-6 h-6 text-purple-600" fill="currentColor" viewBox="0 0 24 24">
+                    <svg v-else-if="method.icon === 'instagram'" class="w-6 h-6 text-purple-600" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 6.62 5.367 11.987 11.988 11.987s11.987-5.367 11.987-11.987C24.004 5.367 18.637.001 12.017.001zM8.449 16.988c-1.297 0-2.448-.49-3.323-1.297C4.198 14.895 3.708 13.744 3.708 12.447s.49-2.448 1.418-3.323c.875-.875 2.026-1.297 3.323-1.297s2.448.422 3.323 1.297c.928.875 1.418 2.026 1.418 3.323s-.49 2.448-1.418 3.244c-.875.807-2.026 1.297-3.323 1.297z"/>
                     </svg>
-                  </div>
-                  <div>
-                    <h3 class="text-xl font-semibold mb-2">Instagram</h3>
-                    <p class="text-gray-600 mb-2">Follow us for daily inspiration and behind-the-scenes content</p>
-                    <a href="#" class="text-purple-600 hover:text-purple-800 font-medium">
-                      @needleandkin
-                    </a>
-                  </div>
-                </div>
-
-                <div class="flex items-start space-x-4">
-                  <div class="bg-purple-100 w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0">
-                    <svg class="w-6 h-6 text-purple-600" fill="currentColor" viewBox="0 0 24 24">
+                    <svg v-else-if="method.icon === 'pinterest'" class="w-6 h-6 text-purple-600" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M12 0C5.374 0 0 5.372 0 12s5.374 12 12 12 12-5.372 12-12S18.626 0 12 0zm1.568 15.482c-.7 0-1.36-.382-1.568-.817l-.438 1.737c-.156.631-.58 1.265-.98 1.738-.3.35-.738.61-1.188.61-.688 0-1.25-.562-1.25-1.25 0-.344.14-.656.366-.883.188-.188.437-.29.7-.29.219 0 .425.07.594.195l.719-2.844c-.813-.25-1.375-1-1.375-1.875 0-1.094.875-1.969 1.969-1.969s1.969.875 1.969 1.969c0 .344-.094.656-.25.938l1.063.406c.719-.719 1.156-1.719 1.156-2.813 0-2.188-1.781-3.969-3.969-3.969S8.031 9.812 8.031 12s1.781 3.969 3.969 3.969c.875 0 1.688-.281 2.344-.781z"/>
                     </svg>
                   </div>
                   <div>
-                    <h3 class="text-xl font-semibold mb-2">Pinterest</h3>
-                    <p class="text-gray-600 mb-2">Discover and save our tutorials and inspiration boards</p>
-                    <a href="#" class="text-purple-600 hover:text-purple-800 font-medium">
-                      @needleandkin
+                    <h3 class="text-xl font-semibold mb-2">{{ method.title }}</h3>
+                    <p class="text-gray-600 mb-2">{{ method.description }}</p>
+                    <a :href="method.url" class="text-purple-600 hover:text-purple-800 font-medium">
+                      {{ method.contact }}
                     </a>
                   </div>
                 </div>
               </div>
 
               <div class="mt-12 p-6 bg-gray-50 rounded-lg">
-                <h3 class="text-xl font-semibold mb-4">Frequently Asked Questions</h3>
+                <h3 class="text-xl font-semibold mb-4">{{ contactInfo?.faq.title }}</h3>
                 <div class="space-y-4">
-                  <div>
-                    <h4 class="font-medium text-gray-900">How long does it take to get a response?</h4>
-                    <p class="text-gray-600">We typically respond to all inquiries within 24-48 hours during business days.</p>
-                  </div>
-                  <div>
-                    <h4 class="font-medium text-gray-900">Can you create custom tutorials?</h4>
-                    <p class="text-gray-600">Yes! We love creating content based on community requests. Let us know what you'd like to learn.</p>
-                  </div>
-                  <div>
-                    <h4 class="font-medium text-gray-900">Do you offer virtual workshops?</h4>
-                    <p class="text-gray-600">We're exploring virtual workshop options. Contact us to express your interest!</p>
+                  <div v-for="item in contactInfo?.faq.questions" :key="item.question">
+                    <h4 class="font-medium text-gray-900">{{ item.question }}</h4>
+                    <p class="text-gray-600">{{ item.answer }}</p>
                   </div>
                 </div>
               </div>
@@ -202,6 +166,8 @@
 </template>
 
 <script setup>
+const { data: contactInfo } = await useFetch('/api/contact-info')
+
 const form = ref({
   name: '',
   email: '',

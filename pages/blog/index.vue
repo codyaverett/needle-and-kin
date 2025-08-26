@@ -20,7 +20,7 @@
             All Posts
           </button>
           <button 
-            v-for="tag in availableTags" 
+            v-for="tag in blogConfig?.availableTags" 
             :key="tag"
             @click="selectedTag = tag"
             :class="['px-4 py-2 rounded-full text-sm font-medium transition-colors capitalize', 
@@ -73,10 +73,10 @@ const { data: response } = await useFetch('/api/posts', {
   }))
 })
 
+const { data: blogConfig } = await useFetch('/api/blog-config')
+
 const posts = computed(() => response.value?.data || [])
 const totalPages = computed(() => response.value?.totalPages || 1)
-
-const availableTags = ['embroidery', 'knitting', 'upcycling', 'cross-stitch', 'macrame', 'tutorial', 'beginner']
 
 useHead({
   title: 'Blog - Needle & Kin',

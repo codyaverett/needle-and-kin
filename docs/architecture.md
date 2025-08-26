@@ -2,7 +2,7 @@
 
 ## System Architecture Overview
 
-The Needle & Kin blog is built using a modern JAMstack architecture with Nuxt 3, providing both server-side rendering (SSR) and static site generation capabilities.
+The Needle & Kin blog is built using a modern JAMstack architecture with Nuxt 3, providing both server-side rendering (SSR) and static site generation capabilities. The architecture features a fully dynamic content management system where all content is served through server API endpoints, making the site easily maintainable and scalable.
 
 ## Frontend Architecture
 
@@ -35,6 +35,58 @@ The main layout wrapper that provides the structural foundation for all pages:
 - SEO meta tag management via `useHead()`
 - Google Fonts integration (Inter font family)
 - Consistent spacing and background styling
+
+## Server API Architecture
+
+### Dynamic Content System
+All site content is now served through dedicated API endpoints, providing a clean separation between content and presentation:
+
+#### Content APIs
+- `/api/about` - About page content (hero, story, mission, team, CTA)
+- `/api/site-content` - Homepage content (hero section, about section)
+- `/api/contact-info` - Contact page content (hero, form config, contact methods, FAQ)
+- `/api/blog-config` - Blog configuration (available tags, pagination settings)
+- `/api/posts` - Blog posts with filtering and pagination
+- `/api/posts/latest` - Latest blog posts for homepage
+- `/api/contact` - Contact form submission endpoint
+
+#### API Response Structure
+All APIs return consistent JSON structures optimized for component consumption:
+
+```typescript
+// Example: /api/about response structure
+{
+  hero: { title: string, description: string },
+  story: { title: string, content: string[] },
+  mission: { 
+    title: string, 
+    values: Array<{
+      icon: string,
+      title: string, 
+      description: string
+    }>
+  },
+  team: {
+    title: string,
+    description: string,
+    members: Array<{
+      name: string,
+      role: string,
+      avatar: string,
+      bio: string
+    }>
+  },
+  cta: {
+    title: string,
+    description: string,
+    buttons: Array<{
+      text: string,
+      url: string,
+      type: 'primary' | 'secondary'
+    }>
+  }
+}
+```
 
 ### Component Architecture
 
@@ -104,26 +156,33 @@ interface Post {
 ### Homepage (`pages/index.vue`)
 
 **Layout Structure:**
-1. **Hero Section** - Gradient background with call-to-action
+1. **Hero Section** - Dynamic gradient background with call-to-action
 2. **Latest Posts Section** - Grid of BlogCard components
-3. **About Section** - Company/site introduction
+3. **About Section** - Dynamic company/site introduction
 
 **Data Fetching:**
 ```typescript
 const { data: latestPosts } = await useFetch('/api/posts/latest')
+const { data: siteContent } = await useFetch('/api/site-content')
 ```
+
+**Dynamic Content Features:**
+- Hero section content served from `/api/site-content`
+- About section content dynamically loaded
+- Call-to-action buttons with configurable URLs and text
+- Content easily updatable through server API
 
 **Features:**
 - Server-side data fetching with proper hydration
 - Responsive grid layouts (1 col mobile, 3 col desktop)
 - Loading states and error handling
-- Call-to-action buttons with proper contrast
+- Dynamic content rendering with fallbacks
 
 ### Blog Listing Page (`pages/blog/index.vue`)
 
 **Layout Structure:**
 1. **Header Section** - Page title and description
-2. **Filter Section** - Tag-based filtering buttons
+2. **Filter Section** - Dynamic tag-based filtering buttons
 3. **Posts Grid** - BlogCard components in responsive grid
 4. **Pagination** - Navigation between pages
 
@@ -138,37 +197,63 @@ const { data: response } = await useFetch('/api/posts', {
     page: currentPage.value
   }))
 })
+
+const { data: blogConfig } = await useFetch('/api/blog-config')
 ```
 
+**Dynamic Content Features:**
+- Available tags loaded from `/api/blog-config`
+- Tag list dynamically generated
+- Blog configuration centrally managed
+- Easy to add/remove tags without code changes
+
 **Features:**
-- Reactive filtering by tags
+- Reactive filtering by dynamic tags
 - Pagination controls
 - Loading states
 - Responsive grid (2 col tablet, 3 col desktop)
-- Tag-based content filtering
+- Server-driven tag configuration
 
 ### About Page (`pages/about.vue`)
 
 **Layout Structure:**
-1. **Hero Section** - Page header with gradient background
-2. **Story Section** - Company history and mission
-3. **Mission Cards** - Three-column grid with icons
-4. **Team Section** - Team member profiles
-5. **CTA Section** - Join community call-to-action
+1. **Hero Section** - Dynamic page header with gradient background
+2. **Story Section** - Dynamic company history and mission
+3. **Mission Cards** - Dynamic three-column grid with icons
+4. **Team Section** - Dynamic team member profiles
+5. **CTA Section** - Dynamic community call-to-action
+
+**Data Fetching:**
+```typescript
+const { data: aboutData } = await useFetch('/api/about')
+```
+
+**Dynamic Content Features:**
+- All content served from `/api/about` endpoint
+- Story content as array for easy paragraph management
+- Mission values with configurable icons and descriptions
+- Team members with dynamic avatars and roles
+- CTA section with configurable buttons and styling
 
 **Features:**
 - Storytelling layout with image placeholders
-- Icon-based mission statements
-- Team member cards with avatars
+- Dynamic icon-based mission statements
+- Team member cards with dynamic avatars
 - Responsive design with proper content hierarchy
+- Content easily maintainable through API
 
 ### Contact Page (`pages/contact.vue`)
 
 **Layout Structure:**
-1. **Hero Section** - Page header with contact invitation
-2. **Contact Form** - Full-featured form with validation
-3. **Contact Methods** - Alternative ways to reach out
-4. **FAQ Section** - Common questions and answers
+1. **Hero Section** - Dynamic page header with contact invitation
+2. **Contact Form** - Full-featured form with dynamic configuration
+3. **Contact Methods** - Dynamic alternative contact options
+4. **FAQ Section** - Dynamic common questions and answers
+
+**Data Fetching:**
+```typescript
+const { data: contactInfo } = await useFetch('/api/contact-info')
+```
 
 **Form Features:**
 ```typescript
@@ -188,13 +273,21 @@ const handleSubmit = async () => {
 }
 ```
 
+**Dynamic Content Features:**
+- Hero content loaded from `/api/contact-info`
+- Form subject options dynamically generated
+- Contact methods with configurable icons and links
+- FAQ questions and answers served from API
+- Easy to update contact information without code changes
+
 **Features:**
 - Client-side form validation
 - Server-side form submission
 - Loading states and success/error feedback
 - Newsletter subscription opt-in
 - Responsive two-column layout
-- Social media contact options
+- Dynamic social media contact options
+- Maintainable FAQ content
 
 ## Styling Architecture
 
@@ -266,6 +359,16 @@ Each page uses Nuxt's `useHead()` composable for:
 - ARIA labels for interactive elements
 - Focus management for mobile menu
 - Screen reader considerations
+
+## Component Cleanup
+
+### Removed Components
+- **HelloWorld.vue** - Removed unused Vue CLI template component that was not referenced in the application
+
+### Component Optimization
+- All remaining components (AppHeader, AppFooter, BlogCard) are actively used
+- Component usage verified across all pages and layouts
+- Clean component architecture with no dead code
 
 ## State Management
 

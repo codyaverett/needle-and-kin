@@ -2,12 +2,12 @@
   <div>
     <section class="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-20">
       <div class="container mx-auto px-4 text-center">
-        <h1 class="text-5xl font-bold mb-6">Welcome to Needle & Kin</h1>
+        <h1 class="text-5xl font-bold mb-6">{{ siteContent?.hero.title }}</h1>
         <p class="text-xl mb-8 max-w-2xl mx-auto">
-          Discover the art of crafting, creativity, and the beautiful connections we make through handmade treasures.
+          {{ siteContent?.hero.description }}
         </p>
-        <NuxtLink to="/blog" class="bg-white text-purple-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
-          Explore Our Blog
+        <NuxtLink :to="siteContent?.hero.cta.url" class="bg-white text-purple-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+          {{ siteContent?.hero.cta.text }}
         </NuxtLink>
       </div>
     </section>
@@ -35,12 +35,12 @@
 
     <section class="bg-gray-100 py-16">
       <div class="container mx-auto px-4 text-center">
-        <h2 class="text-3xl font-bold mb-6">About Needle & Kin</h2>
+        <h2 class="text-3xl font-bold mb-6">{{ siteContent?.aboutSection.title }}</h2>
         <p class="text-lg max-w-3xl mx-auto text-gray-700">
-          We believe that every stitch tells a story, every creation builds connection, and every handmade piece carries the love and intention of its maker. Join us on this journey of creativity and craftsmanship.
+          {{ siteContent?.aboutSection.description }}
         </p>
-        <NuxtLink to="/about" class="inline-block mt-8 bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors">
-          Learn More About Us
+        <NuxtLink :to="siteContent?.aboutSection.cta.url" class="inline-block mt-8 bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors">
+          {{ siteContent?.aboutSection.cta.text }}
         </NuxtLink>
       </div>
     </section>
@@ -49,4 +49,5 @@
 
 <script setup>
 const { data: latestPosts } = await useFetch('/api/posts/latest')
+const { data: siteContent } = await useFetch('/api/site-content')
 </script>
