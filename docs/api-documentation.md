@@ -11,7 +11,217 @@ The Needle & Kin blog uses Nuxt 3's built-in server API functionality to provide
 ## Authentication
 Currently, the API endpoints are public and do not require authentication. This is suitable for read-only blog content.
 
-## Endpoints
+## Content APIs
+
+The project now features a comprehensive dynamic content system where all site content is served through dedicated API endpoints. This approach provides a clean separation between content and presentation, making the site easily maintainable and scalable.
+
+## Dynamic Content Endpoints
+
+### GET /api/about
+
+**Purpose:** Retrieve all content for the About page
+
+**Request:**
+```http
+GET /api/about
+```
+
+**Response Format:**
+```typescript
+interface AboutResponse {
+  hero: {
+    title: string
+    description: string
+  }
+  story: {
+    title: string
+    content: string[]
+  }
+  mission: {
+    title: string
+    values: Array<{
+      icon: string
+      title: string
+      description: string
+    }>
+  }
+  team: {
+    title: string
+    description: string
+    members: Array<{
+      name: string
+      role: string
+      avatar: string
+      bio: string
+    }>
+  }
+  cta: {
+    title: string
+    description: string
+    buttons: Array<{
+      text: string
+      url: string
+      type: 'primary' | 'secondary'
+    }>
+  }
+}
+```
+
+**Example Response:**
+```json
+{
+  "hero": {
+    "title": "About Needle & Kin",
+    "description": "Discover the story behind our crafting community..."
+  },
+  "story": {
+    "title": "Our Story",
+    "content": [
+      "Needle & Kin was born from a simple belief...",
+      "What began as weekend crafting sessions..."
+    ]
+  },
+  "mission": {
+    "title": "Our Mission",
+    "values": [
+      {
+        "icon": "book",
+        "title": "Educate",
+        "description": "Provide clear, accessible tutorials..."
+      }
+    ]
+  }
+}
+```
+
+---
+
+### GET /api/site-content
+
+**Purpose:** Retrieve homepage dynamic content
+
+**Request:**
+```http
+GET /api/site-content
+```
+
+**Response Format:**
+```typescript
+interface SiteContentResponse {
+  hero: {
+    title: string
+    description: string
+    cta: {
+      text: string
+      url: string
+    }
+  }
+  aboutSection: {
+    title: string
+    description: string
+    cta: {
+      text: string
+      url: string
+    }
+  }
+}
+```
+
+---
+
+### GET /api/contact-info
+
+**Purpose:** Retrieve all content for the Contact page
+
+**Request:**
+```http
+GET /api/contact-info
+```
+
+**Response Format:**
+```typescript
+interface ContactInfoResponse {
+  hero: {
+    title: string
+    description: string
+  }
+  form: {
+    title: string
+    subjects: Array<{
+      value: string
+      label: string
+    }>
+  }
+  contactMethods: {
+    title: string
+    methods: Array<{
+      icon: string
+      title: string
+      description: string
+      contact: string
+      url: string
+    }>
+  }
+  faq: {
+    title: string
+    questions: Array<{
+      question: string
+      answer: string
+    }>
+  }
+}
+```
+
+---
+
+### GET /api/blog-config
+
+**Purpose:** Retrieve blog configuration including available tags
+
+**Request:**
+```http
+GET /api/blog-config
+```
+
+**Response Format:**
+```typescript
+interface BlogConfigResponse {
+  availableTags: string[]
+  postsPerPage: number
+  featuredCategories: Array<{
+    name: string
+    tag: string
+    description: string
+  }>
+}
+```
+
+**Example Response:**
+```json
+{
+  "availableTags": [
+    "embroidery",
+    "knitting",
+    "upcycling",
+    "cross-stitch",
+    "macrame",
+    "tutorial",
+    "beginner"
+  ],
+  "postsPerPage": 10,
+  "featuredCategories": [
+    {
+      "name": "Tutorial",
+      "tag": "tutorial",
+      "description": "Step-by-step guides for all skill levels"
+    }
+  ]
+}
+```
+
+---
+
+## Blog Content Endpoints
 
 ### GET /api/posts/latest
 
@@ -328,6 +538,11 @@ Future iterations may include:
 ```
 server/
 └── api/
+    ├── about.get.ts         # About page content
+    ├── site-content.get.ts  # Homepage content
+    ├── contact-info.get.ts  # Contact page content  
+    ├── blog-config.get.ts   # Blog configuration
+    ├── contact.post.ts      # Contact form submission
     └── posts/
         ├── index.get.ts     # Main posts endpoint
         └── latest.get.ts    # Latest posts endpoint
@@ -344,16 +559,18 @@ server/
 Use any HTTP client to test the endpoints:
 
 ```bash
-# Get latest posts
+# Dynamic Content APIs
+curl http://localhost:3000/api/about
+curl http://localhost:3000/api/site-content  
+curl http://localhost:3000/api/contact-info
+curl http://localhost:3000/api/blog-config
+
+# Blog Content APIs
 curl http://localhost:3000/api/posts/latest
-
-# Get all posts with pagination
 curl "http://localhost:3000/api/posts?page=1&limit=5"
-
-# Filter by tag
 curl "http://localhost:3000/api/posts?tag=embroidery"
 
-# Submit contact form
+# Contact Form API
 curl -X POST http://localhost:3000/api/contact \
   -H "Content-Type: application/json" \
   -d '{"name":"John Doe","email":"john@example.com","subject":"general","message":"Test message","newsletter":true}'
