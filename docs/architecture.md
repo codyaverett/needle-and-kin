@@ -12,6 +12,7 @@ The Needle & Kin blog is built using a modern JAMstack architecture with Nuxt 3,
 - **TypeScript** - Type-safe JavaScript development
 - **Tailwind CSS** - Utility-first CSS framework
 - **Nitro 2.12.4** - Server engine for universal deployment
+- **Storybook 9.1.3** - Component development and documentation environment
 
 ### Layout System
 
@@ -359,6 +360,52 @@ Each page uses Nuxt's `useHead()` composable for:
 - ARIA labels for interactive elements
 - Focus management for mobile menu
 - Screen reader considerations
+
+## Component Development Environment
+
+### Storybook Integration
+
+The project includes **Storybook 9.1.3** for component development and documentation:
+
+**Configuration:**
+- **Framework:** Vue 3 with Vite builder for fast HMR
+- **Styling:** Full Tailwind CSS integration
+- **Location:** Stories are co-located with components (`ComponentName.stories.js`)
+
+**Available Addons:**
+- **@storybook/addon-links** - Navigation between stories
+- **@storybook/addon-docs** - Automatic component documentation
+- **@storybook/addon-a11y** - Accessibility testing and validation
+
+**Features:**
+- **Isolated Development** - Develop components in isolation
+- **Multiple Variants** - Test different component states and props
+- **Responsive Testing** - View components at different viewport sizes
+- **Background Testing** - Test components against different backgrounds
+- **Documentation** - Auto-generated component documentation
+- **Accessibility Testing** - Built-in a11y validation
+
+**Story Coverage:**
+- **BlogCard** - Blog post card component with multiple variants
+- **AppHeader** - Navigation header with responsive behavior
+- **AppFooter** - Site footer with social media links
+- **ContactForm** - Contact form with validation states
+
+**Development Workflow:**
+```bash
+pnpm storybook        # Start development environment
+pnpm build-storybook  # Build static documentation site
+```
+
+**Story Structure:**
+```
+components/
+├── BlogCard.vue
+├── BlogCard.stories.js    # Stories for BlogCard component
+├── AppHeader.vue
+├── AppHeader.stories.js   # Stories for AppHeader component
+└── ...
+```
 
 ## Component Cleanup
 

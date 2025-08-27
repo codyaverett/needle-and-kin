@@ -29,7 +29,13 @@
 
 <script setup>
 import { ref } from 'vue'
-import { useFetch } from '#app'
+
+const props = defineProps({
+	onSubmit: {
+		type: Function,
+		default: null
+	}
+})
 
 const form = ref({
 	name: '',
@@ -46,16 +52,27 @@ async function handleSubmit() {
 	error.value = ''
 	success.value = ''
 	loading.value = true
+	
 	try {
-		const { data, error: fetchError } = await useFetch('/api/contact', {
-			method: 'POST',
-			body: { ...form.value }
-		})
-		if (fetchError.value) {
-			error.value = fetchError.value.statusMessage || 'Submission failed.'
-		} else if (data.value?.success) {
-			success.value = data.value.message
+		// If onSubmit prop is provided (e.g., in Storybook), use it
+		if (props.onSubmit) {
+			await props.onSubmit({ ...form.value })
+			success.value = 'Message sent successfully!'
 			form.value = { name: '', email: '', subject: '', message: '', newsletter: false }
+		} else {
+			// Otherwise, use Nuxt's $fetch for the actual form submission
+			const { $fetch } = useNuxtApp()
+			const result = await $fetch('/api/contact', {
+				method: 'POST',
+				body: { ...form.value }
+			})
+			
+			if (result?.success) {
+				success.value = result.message
+				form.value = { name: '', email: '', subject: '', message: '', newsletter: false }
+			} else {
+				error.value = 'Submission failed.'
+			}
 		}
 	} catch (e) {
 		error.value = 'An error occurred. Please try again.'

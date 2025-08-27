@@ -200,6 +200,8 @@ needle-and-kin/
 - `pnpm build` - Build for production
 - `pnpm generate` - Generate static site
 - `pnpm preview` - Preview production build
+- `pnpm storybook` - Start Storybook component development environment
+- `pnpm build-storybook` - Build static Storybook site
 
 ## Current Status (Version 2.0.0)
 

@@ -2,7 +2,10 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
   css: ['~/assets/css/main.css'],
-  modules: ['@nuxtjs/tailwindcss'],
+  modules: [
+    '@nuxtjs/tailwindcss',
+    '@pinia/nuxt',
+  ],
   vite: {
     server: {
       allowedHosts: ['*.ngrok-free.app', '4011de57d201.ngrok-free.app'],

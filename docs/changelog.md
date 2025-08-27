@@ -1,5 +1,40 @@
 # Changelog - Needle & Kin Project
 
+## Version 2.1.0 - Storybook Integration (2024-08-26)
+
+### 🎨 New Features
+
+#### Component Development Environment
+- **Added Storybook 9.1.3** - Complete component development and documentation environment
+- **Vue 3 Integration** - Proper Vue 3 and Vite configuration for optimal development experience
+- **Tailwind CSS Support** - Full Tailwind CSS integration in Storybook stories
+
+#### Story Coverage
+- **BlogCard Stories** - Comprehensive stories covering all variants (default, long content, short content, grid layout)
+- **AppHeader Stories** - Responsive navigation stories with mobile/tablet/desktop views
+- **AppFooter Stories** - Footer stories with different contexts and interactions
+- **ContactForm Stories** - Form validation and accessibility-focused stories
+
+#### Developer Experience
+- **Isolated Development** - Develop and test components in isolation
+- **Multiple Viewports** - Test responsive behavior across different screen sizes  
+- **Background Testing** - Test components against various background colors
+- **Accessibility Testing** - Built-in a11y validation with @storybook/addon-a11y
+- **Documentation** - Auto-generated component documentation
+
+### 🔧 Configuration & Setup
+- **Tailwind Configuration** - Added tailwind.config.js for consistent styling
+- **Vite Plugin Integration** - Proper @vitejs/plugin-vue configuration for Vue SFC support
+- **Story Organization** - Co-located stories next to components for maintainability
+- **Development Scripts** - Added storybook and build-storybook npm scripts
+
+### 📚 Documentation Updates
+- **Storybook README** - Comprehensive configuration and usage guide
+- **Architecture Documentation** - Added dedicated Storybook integration section
+- **Project Setup** - Updated development commands and workflow documentation
+
+---
+
 ## Version 2.0.0 - Dynamic Content System Implementation (2024-08-26)
 
 ### 🚀 Major Changes
