@@ -1,5 +1,54 @@
 # Changelog - Needle & Kin Project
 
+## Version 2.5.0 - Author Features & Profile UI (2024-12-28)
+
+### 🎨 New Features
+
+#### Author Management System
+- **GET /api/authors/[id]** - Author profile with stats and social links
+  - Follower/following counts
+  - Social media links
+  - Expertise areas
+  - Recent posts included
+  
+- **GET /api/authors/[id]/posts** - Author's posts with filtering
+  - Category and difficulty filtering
+  - Multiple sorting options
+  - Author statistics
+  
+- **POST /api/authors/[id]/follow** - Follow author functionality
+  - Authentication required
+  - Auto-subscribe to newsletter
+  - Notification system
+  
+- **POST /api/authors/[id]/unfollow** - Unfollow author
+  - Remove subscriptions
+  - Update follower counts
+
+#### Newsletter System
+- **POST /api/newsletter/subscribe** - Newsletter subscription
+  - Category preferences
+  - Frequency options (daily/weekly/monthly)
+  - Email validation
+  - Auto-verify for authenticated users
+
+#### User Interface
+- **Profile Edit Page** - Complete profile management UI
+  - Three-tab interface (Basic, Crafting, Preferences)
+  - Avatar upload placeholder
+  - Real-time character counting
+  - Responsive design
+  - Form validation
+  - Success/error messaging
+
+### 📊 Statistics  
+- **5 New API Endpoints** for authors and newsletter
+- **1 New UI Page** for profile editing
+- **Total endpoints:** 29
+- **Phase 2:** ~85% complete
+
+---
+
 ## Version 2.4.0 - Admin Panel Backend (2024-12-28)
 
 ### 🎨 New Features
