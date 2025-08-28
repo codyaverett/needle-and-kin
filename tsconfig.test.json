@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "types/**/*.d.ts",
+    "server/**/*.test.ts",
+    "server/**/*.spec.ts",
+    "server/**/test-utils.ts",
+    "test/**/*",
+    "vitest.config.ts"
+  ],
+  "exclude": [],
+  "compilerOptions": {
+    "types": ["vitest/globals", "node"],
+    "typeRoots": ["./node_modules/@types", "./types"]
+  }
+}

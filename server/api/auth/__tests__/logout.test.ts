@@ -20,8 +20,8 @@ vi.mock('~/server/utils/database', () => ({
   }
 }))
 
-import { auth } from '~/server/utils/auth'
-import { db } from '~/server/utils/database'
+import { auth } from '../../../utils/auth'
+import { db } from '../../../utils/database'
 
 // Use vi.mocked to get properly typed mocks
 const mockAuth = vi.mocked(auth, true)

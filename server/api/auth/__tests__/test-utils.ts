@@ -1,15 +1,5 @@
 import { vi } from 'vitest'
 
-// Extend global namespace for test utilities
-declare global {
-  let readBody: ReturnType<typeof vi.fn>
-  let getHeader: ReturnType<typeof vi.fn>
-  let getCookie: ReturnType<typeof vi.fn>
-  let setCookie: ReturnType<typeof vi.fn>
-  let deleteCookie: ReturnType<typeof vi.fn>
-  let createError: ReturnType<typeof vi.fn>
-}
-
 // Create a mock event that satisfies H3Event type requirements
 export const createMockEvent = (): any => ({
   node: {

@@ -9,7 +9,7 @@ vi.mock('~/server/utils/auth', () => ({
   }
 }))
 
-import { auth } from '~/server/utils/auth'
+import { auth } from '../../../utils/auth'
 
 // Use vi.mocked to get properly typed mocks
 const mockAuth = vi.mocked(auth, true)
