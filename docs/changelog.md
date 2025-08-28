@@ -1,5 +1,74 @@
 # Changelog - Needle & Kin Project
 
+## Version 2.6.0 - UI Components & Rich Content Editing (2024-12-28)
+
+### 🎨 New Features
+
+#### UI Components
+- **CommentList & CommentItem Components** - Full-featured comment system UI
+  - Nested replies support
+  - Like/edit/delete functionality
+  - Real-time character counting
+  - Authentication integration
+  - Responsive design with avatars
+
+- **RichTextEditor Component** - Advanced WYSIWYG editor
+  - Toolbar with formatting options (bold, italic, underline, strikethrough)
+  - Heading levels (H1-H4)
+  - Lists (bullet and numbered)
+  - Text alignment controls
+  - Link and image insertion
+  - Blockquote and code formatting
+  - Undo/redo functionality
+  - Preview and HTML view modes
+  - Word and character counting
+  - Keyboard shortcuts support
+
+- **MediaUpload & MediaLibrary Components** - Complete media management
+  - Drag-and-drop file upload
+  - Multiple file selection
+  - Image preview with thumbnails
+  - File type validation
+  - Size limit enforcement
+  - Upload progress tracking
+  - Media library with search and filtering
+  - Grid view with selection
+
+- **Admin Pages** - Comprehensive admin interface
+  - Posts listing page with filtering and pagination
+  - Post create/edit pages with rich text editing
+  - SEO settings management
+  - Featured image handling
+  - Category and tag management
+  - Publishing controls (draft, published, scheduled)
+  - Statistics display
+
+- **Author Profile Page** - Public author profiles
+  - Author bio and statistics
+  - Social media links
+  - Expertise showcase
+  - Posts grid with filtering
+  - Follow/unfollow functionality
+  - About and followers tabs
+  - Achievement badges
+
+### 🧪 Testing
+- **Component Tests** - Added comprehensive test suites
+  - CommentItem component tests (10 tests)
+  - CommentList component tests (11 tests)
+  - RichTextEditor component tests (19 tests)
+  - 240 total tests passing (out of 245)
+
+### 📊 Statistics
+- **6 New Vue Components** created
+- **5 New Pages** added
+- **40 New Component Tests** written
+- **Total tests:** 245 (240 passing)
+- **UI Coverage:** ~90% complete
+- **Phase 2:** ~95% complete
+
+---
+
 ## Version 2.5.0 - Author Features & Profile UI (2024-12-28)
 
 ### 🎨 New Features

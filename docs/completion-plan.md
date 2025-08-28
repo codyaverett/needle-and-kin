@@ -43,7 +43,7 @@ This document outlines the comprehensive plan to complete the Needle & Kin craft
   - [x] Create `/api/posts/[id]/comments` GET endpoint ✅
   - [x] Create `/api/posts/[id]/comments` POST endpoint ✅
   - [ ] Add comment moderation features
-  - [ ] Build comment UI components
+  - [x] Build comment UI components
 - [x] Add view tracking ✅
   - [x] Create `/api/posts/[id]/views` POST endpoint ✅
   - [x] Implement view counting logic ✅
@@ -58,8 +58,8 @@ This document outlines the comprehensive plan to complete the Needle & Kin craft
   - [x] Implement full-text search ✅
   - [ ] Add search UI with debouncing
 - [ ] Create author pages
-  - [ ] Implement `/api/authors/[id]` endpoint
-  - [ ] Build author profile pages
+  - [x] Implement `/api/authors/[id]` endpoint
+  - [x] Build author profile pages
   - [ ] Add author post listings
 
 ### 3. Admin Panel (Week 2)
@@ -69,9 +69,9 @@ This document outlines the comprehensive plan to complete the Needle & Kin craft
   - [x] Build `/api/admin/posts/[id]` update endpoint ✅
   - [x] Add `/api/admin/posts/[id]` delete endpoint ✅
   - [x] Implement draft/publish workflow ✅
-  - [ ] Build `/admin/posts` listing page UI
-  - [ ] Create `/admin/posts/create` page UI
-  - [ ] Build `/admin/posts/[id]` edit page UI
+  - [x] Build `/admin/posts` listing page UI
+  - [x] Create `/admin/posts/create` page UI
+  - [x] Build `/admin/posts/[id]` edit page UI
 - [x] Build user management backend ✅
   - [x] Create `/api/admin/users` listing endpoint ✅
   - [ ] Add user creation interface
@@ -80,8 +80,8 @@ This document outlines the comprehensive plan to complete the Needle & Kin craft
   - [ ] Create `/admin/users` listing page UI
 - [ ] Implement content editor
   - [ ] Create `/admin/content` interface
-  - [ ] Add rich text editor
-  - [ ] Build media upload system
+  - [x] Add rich text editor
+  - [x] Build media upload system
   - [ ] Add content preview
 - [ ] Add settings management
   - [ ] Create `/admin/settings` page
