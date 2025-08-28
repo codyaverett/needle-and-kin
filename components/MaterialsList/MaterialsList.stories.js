@@ -328,7 +328,7 @@ export const ShoppingFocused = {
 };
 
 export const InteractiveDemo = {
-  render: (args) => ({
+  render: (_args) => ({
     components: { MaterialsList },
     setup() {
       const materials = [...embroideryMaterials];

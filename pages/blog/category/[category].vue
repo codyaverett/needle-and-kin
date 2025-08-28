@@ -270,12 +270,12 @@ import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useBlogStore } from '~/stores/blog'
 import { useUIStore } from '~/stores/ui'
-import { useUserStore } from '~/stores/user'
+// import { useUserStore } from '~/stores/user'
 
 const route = useRoute()
 const blogStore = useBlogStore()
 const uiStore = useUIStore()
-const userStore = useUserStore()
+// const userStore = useUserStore()  // TODO: Use when implementing user features
 
 const category = computed(() => route.params.category)
 const sortBy = ref('latest')
@@ -283,7 +283,7 @@ const skillFilter = ref('All')
 const email = ref('')
 
 // Fetch posts for this category
-const { data: posts, pending } = await useFetch('/api/posts', {
+const { data: posts, pending: _pending } = await useFetch('/api/posts', {
   query: {
     category: category.value
   }
@@ -318,16 +318,18 @@ const sortedPosts = computed(() => {
       return posts.sort((a, b) => (b.views || 0) - (a.views || 0))
     case 'trending':
       return posts.sort((a, b) => (b.likes || 0) - (a.likes || 0))
-    case 'difficulty-asc':
+    case 'difficulty-asc': {
       const difficultyOrder = { beginner: 1, intermediate: 2, advanced: 3 }
       return posts.sort((a, b) => 
         (difficultyOrder[a.difficulty] || 0) - (difficultyOrder[b.difficulty] || 0)
       )
-    case 'difficulty-desc':
+    }
+    case 'difficulty-desc': {
       const difficultyOrderDesc = { beginner: 1, intermediate: 2, advanced: 3 }
       return posts.sort((a, b) => 
         (difficultyOrderDesc[b.difficulty] || 0) - (difficultyOrderDesc[a.difficulty] || 0)
       )
+    }
     default: // latest
       return posts.sort((a, b) => 
         new Date(b.publishedAt) - new Date(a.publishedAt)
@@ -353,7 +355,7 @@ const totalViews = computed(() => {
 })
 
 // Popular tags
-const popularTags = computed(() => {
+const _popularTags = computed(() => {
   const tagCounts = {}
   filteredPosts.value.forEach(post => {
     post.tags?.forEach(tag => {

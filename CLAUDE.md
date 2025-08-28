@@ -1,2 +1,3 @@
 - this project should always use pnpm instead of npm
 - After making changes we should always update the documentation in docs/
+- When adding new features always follow Test driven development cycles to ensure code code is tested and covered

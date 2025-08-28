@@ -419,17 +419,45 @@ components/
 
 ## State Management
 
-### Data Flow
+### Pinia Store Architecture
+
+The application uses **Pinia** as the official state management solution for Vue 3/Nuxt 3, replacing the traditional Vuex pattern.
+
+#### Store Modules
+- **Blog Store** (`/stores/blog.js`) - Blog posts, categories, search, pagination
+- **User Store** (`/stores/user.js`) - Authentication, user profile, preferences  
+- **UI Store** (`/stores/ui.js`) - Theme, modals, notifications, view modes
+
+#### Data Flow
 1. **Server-Side:** API endpoints provide initial data
-2. **Client-Side:** `useFetch` manages reactive data
-3. **Component Props:** Data flows down through props
-4. **Event Handling:** User interactions trigger state updates
+2. **Pinia Stores:** Centralized state management with actions and getters
+3. **Component Composition:** Stores accessed via `useStore()` composables
+4. **Reactive Updates:** Automatic reactivity through Vue 3's reactive system
 
 ### Reactivity Patterns
+- **Store State:** Reactive state managed by Pinia
+- **Store Getters:** Computed values derived from state
+- **Store Actions:** Methods for state mutations and async operations
 - `ref()` for component-level state
 - `computed()` for derived values
 - `useFetch()` for server data with automatic reactivity
 - `watch()` for reactive side effects
+
+### Store Integration
+```javascript
+// Component usage example
+import { useBlogStore } from '~/stores/blog'
+const blogStore = useBlogStore()
+
+// Access reactive state
+const posts = computed(() => blogStore.filteredPosts)
+
+// Call actions
+await blogStore.fetchPosts()
+blogStore.setCategory('knitting')
+```
+
+For detailed state management documentation, see [State Management Documentation](./state-management.md)
 
 ## Development Workflow
 
@@ -447,5 +475,41 @@ Assets: Static files and global styles
 - Type-safe API responses
 - Props validation with TypeScript interfaces
 - IDE support with proper intellisense
+
+#### Path Aliases Configuration
+The project uses TypeScript path aliases for cleaner and more maintainable imports:
+
+**Configured Aliases:**
+- `@/*` and `~/*` - Project root directory
+- `@components/*` - Component files
+- `@pages/*` - Page components
+- `@layouts/*` - Layout templates
+- `@stores/*` - Pinia stores
+- `@server/*` - Server-side code
+- `@utils/*` - Utility functions
+- `@types/*` - TypeScript type definitions
+- `@api/*` - API route handlers
+- `@middleware/*` - Nuxt middleware
+- `@plugins/*` - Nuxt plugins
+- `@assets/*` - Static assets (processed at build time)
+- `@public/*` - Public files (served as-is)
+
+**Configuration Files:**
+- `tsconfig.json` - TypeScript compiler paths
+- `nuxt.config.ts` - Nuxt/Vite alias resolution
+- `vitest.config.ts` - Test environment aliases
+
+**Usage Example:**
+```typescript
+// Instead of:
+import { useBlogStore } from '../../stores/blog'
+import type { User } from '../../../server/types/auth'
+
+// Use:
+import { useBlogStore } from '@stores/blog'
+import type { User } from '@types/auth'
+```
+
+This configuration ensures consistent import paths across the entire codebase, making refactoring easier and improving code readability.
 
 This architecture provides a solid foundation for a scalable blog application with excellent developer experience and user performance.

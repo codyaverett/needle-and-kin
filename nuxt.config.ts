@@ -1,4 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import { fileURLToPath } from 'node:url'
+
 export default defineNuxtConfig({
   devtools: { enabled: true },
   css: ['~/assets/css/main.css'],
@@ -6,6 +8,20 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss',
     '@pinia/nuxt',
   ],
+  alias: {
+    '@components': fileURLToPath(new URL('./components', import.meta.url)),
+    '@pages': fileURLToPath(new URL('./pages', import.meta.url)),
+    '@layouts': fileURLToPath(new URL('./layouts', import.meta.url)),
+    '@stores': fileURLToPath(new URL('./stores', import.meta.url)),
+    '@server': fileURLToPath(new URL('./server', import.meta.url)),
+    '@utils': fileURLToPath(new URL('./utils', import.meta.url)),
+    '@types': fileURLToPath(new URL('./server/types', import.meta.url)),
+    '@api': fileURLToPath(new URL('./server/api', import.meta.url)),
+    '@middleware': fileURLToPath(new URL('./middleware', import.meta.url)),
+    '@plugins': fileURLToPath(new URL('./plugins', import.meta.url)),
+    '@assets': fileURLToPath(new URL('./assets', import.meta.url)),
+    '@public': fileURLToPath(new URL('./public', import.meta.url))
+  },
   vite: {
     server: {
       allowedHosts: ['*.ngrok-free.app', '4011de57d201.ngrok-free.app'],
@@ -14,6 +30,14 @@ export default defineNuxtConfig({
       }
     }
   },
+  ignore: [
+    '**/*.test.ts',
+    '**/*.test.js',
+    '**/*.spec.ts',
+    '**/*.spec.js',
+    '**/test-utils.ts',
+    'test/**/*'
+  ],
   app: {
     head: {
       title: 'Needle & Kin - Crafting Community',

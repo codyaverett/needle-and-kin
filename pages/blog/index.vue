@@ -123,11 +123,11 @@
 <script setup>
 import { ref, computed, onMounted, watchEffect } from 'vue'
 import { useBlogStore } from '~/stores/blog'
-import { useUIStore } from '~/stores/ui'
+// import { useUIStore } from '~/stores/ui'
 import { debounce } from 'lodash-es'
 
 const blogStore = useBlogStore()
-const uiStore = useUIStore()
+// const uiStore = useUIStore()  // TODO: Use when implementing UI features
 
 const searchQuery = ref('')
 

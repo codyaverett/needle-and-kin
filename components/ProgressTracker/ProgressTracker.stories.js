@@ -392,7 +392,7 @@ export const DetailedSteps = {
 };
 
 export const InteractiveDemo = {
-  render: (args) => ({
+  render: (_args) => ({
     components: { ProgressTracker },
     setup() {
       const steps = [...embroiderySteps];

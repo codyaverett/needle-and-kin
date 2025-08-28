@@ -284,7 +284,7 @@ export const WithoutCoverImage = {
 };
 
 export const InteractiveDemo = {
-  render: (args) => ({
+  render: (_args) => ({
     components: { MakerStory },
     setup() {
       const handleViewProject = (project) => {

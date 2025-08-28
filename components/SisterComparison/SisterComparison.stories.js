@@ -289,7 +289,7 @@ export const MinimalData = {
 };
 
 export const InteractiveDemo = {
-  render: (args) => ({
+  render: (_args) => ({
     components: { SisterComparison },
     setup() {
       const handleViewTutorial = (url) => {

@@ -225,11 +225,11 @@ export const MinimalCounter = {
 };
 
 export const InteractiveDemo = {
-  render: (args) => ({
+  render: (_args) => ({
     components: { StitchCounter },
     setup() {
       let count = 23;
-      let sessionStats = {
+      const sessionStats = {
         totalIncrements: 12,
         duration: 1847 // About 30 minutes
       };

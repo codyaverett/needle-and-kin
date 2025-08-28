@@ -256,14 +256,14 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { useBlogStore } from '~/stores/blog'
+// import { useBlogStore } from '~/stores/blog'
 import { useUserStore } from '~/stores/user'
 import { useUIStore } from '~/stores/ui'
 import BlogCard from '~/components/BlogCard/BlogCard.vue'
 import SkillLevelBadge from '~/components/SkillLevelBadge/SkillLevelBadge.vue'
 
 const route = useRoute()
-const blogStore = useBlogStore()
+// const blogStore = useBlogStore()  // TODO: Use when implementing blog store
 const userStore = useUserStore()
 const uiStore = useUIStore()
 

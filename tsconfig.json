@@ -1,0 +1,29 @@
+{
+  "extends": "./.nuxt/tsconfig.json",
+  "exclude": [
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "**/test-utils.ts",
+    "test/**/*",
+    "vitest.config.ts",
+    "coverage"
+  ],
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./*"],
+      "~/*": ["./*"],
+      "@components/*": ["./components/*"],
+      "@pages/*": ["./pages/*"],
+      "@layouts/*": ["./layouts/*"],
+      "@stores/*": ["./stores/*"],
+      "@server/*": ["./server/*"],
+      "@utils/*": ["./utils/*"],
+      "@types/*": ["./server/types/*"],
+      "@api/*": ["./server/api/*"],
+      "@middleware/*": ["./middleware/*"],
+      "@plugins/*": ["./plugins/*"],
+      "@assets/*": ["./assets/*"],
+      "@public/*": ["./public/*"]
+    }
+  }
+}

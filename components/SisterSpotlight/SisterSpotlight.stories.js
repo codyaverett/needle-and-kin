@@ -214,7 +214,7 @@ export const MinimalProcessPhotos = {
 };
 
 export const InteractiveDemo = {
-  render: (args) => ({
+  render: (_args) => ({
     components: { SisterSpotlight },
     setup() {
       const handleViewTutorial = (url) => {

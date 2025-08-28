@@ -116,7 +116,7 @@ export const DifferentAuthor = {
 
 // Multiple cards layout story
 export const GridLayout = {
-  render: (args) => ({
+  render: (_args) => ({
     components: { BlogCard },
     setup() {
       const posts = [

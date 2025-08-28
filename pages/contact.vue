@@ -184,7 +184,7 @@ const handleSubmit = async () => {
   submitStatus.value = ''
 
   try {
-    const response = await $fetch('/api/contact', {
+    await $fetch('/api/contact', {
       method: 'POST',
       body: form.value
     })

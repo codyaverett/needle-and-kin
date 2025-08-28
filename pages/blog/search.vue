@@ -289,7 +289,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useBlogStore } from '~/stores/blog'
 import { useUIStore } from '~/stores/ui'
 import { debounce } from 'lodash-es'
