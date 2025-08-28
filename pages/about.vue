@@ -8,6 +8,7 @@
         </p>
       </div>
     </section>
+    <QuiltSimulation />
 
     <section class="py-16">
       <div class="container mx-auto px-4">
@@ -110,6 +111,7 @@
 </template>
 
 <script setup>
+import QuiltSimulation from '../../components/QuiltSimulation.vue';
 const { data: aboutData } = await useFetch('/api/about')
 
 useHead({
