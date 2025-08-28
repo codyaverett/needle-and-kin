@@ -1,5 +1,23 @@
 import { defineStore } from 'pinia'
-import type { Notification, NotificationPreferences, NotificationStats } from '~/types/notification'
+import type { Notification, NotificationPreferences } from '../types/notification'
+
+// Use standard fetch API with proper typing
+const fetchAPI = async (url: string, options?: RequestInit) => {
+  const response = await fetch(url, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options?.headers,
+    },
+    credentials: 'include',
+  })
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`)
+  }
+  
+  return await response.json()
+}
 
 interface NotificationsState {
   notifications: Notification[]
@@ -29,18 +47,18 @@ export const useNotificationsStore = defineStore('notifications', {
   getters: {
     recentNotifications: (state) => state.notifications.slice(0, 10),
     
-    unreadNotifications: (state) => state.notifications.filter(n => !n.read),
+    unreadNotifications: (state) => state.notifications.filter((n: Notification) => !n.read),
     
-    readNotifications: (state) => state.notifications.filter(n => n.read),
+    readNotifications: (state) => state.notifications.filter((n: Notification) => n.read),
     
     notificationsByType: (state) => (type: string) => {
-      return state.notifications.filter(n => n.type === type)
+      return state.notifications.filter((n: Notification) => n.type === type)
     },
     
     hasUnread: (state) => state.unreadCount > 0,
     
     sortedNotifications: (state) => {
-      return [...state.notifications].sort((a, b) => {
+      return [...state.notifications].sort((a: Notification, b: Notification) => {
         const dateA = new Date(a.createdAt).getTime()
         const dateB = new Date(b.createdAt).getTime()
         return dateB - dateA
@@ -60,23 +78,21 @@ export const useNotificationsStore = defineStore('notifications', {
       this.error = null
 
       try {
-        const { data } = await $fetch(`/api/notifications`, {
-          params: {
-            page: this.page,
-            limit: 20
-          },
-          credentials: 'include'
+        const params = new URLSearchParams({
+          page: this.page.toString(),
+          limit: '20'
         })
+        const result = await fetchAPI(`/api/notifications?${params}`)
 
-        if (data) {
+        if (result?.data) {
           if (reset) {
-            this.notifications = data.notifications
+            this.notifications = result.data.notifications
           } else {
-            this.notifications.push(...data.notifications)
+            this.notifications.push(...result.data.notifications)
           }
           
-          this.totalCount = data.total
-          this.hasMore = data.hasMore
+          this.totalCount = result.data.total
+          this.hasMore = result.data.hasMore
           this.lastFetch = new Date()
           
           this.updateUnreadCount()
@@ -91,12 +107,10 @@ export const useNotificationsStore = defineStore('notifications', {
 
     async fetchUnreadCount() {
       try {
-        const { data } = await $fetch('/api/notifications/unread-count', {
-          credentials: 'include'
-        })
+        const result = await fetchAPI('/api/notifications/unread-count')
         
-        if (data) {
-          this.unreadCount = data.count
+        if (result?.data) {
+          this.unreadCount = result.data.count
         }
       } catch (error) {
         console.error('Failed to fetch unread count:', error)
@@ -104,16 +118,15 @@ export const useNotificationsStore = defineStore('notifications', {
     },
 
     async markAsRead(notificationId: string) {
-      const notification = this.notifications.find(n => n.id === notificationId)
+      const notification = this.notifications.find((n: Notification) => n.id === notificationId)
       if (!notification || notification.read) return
 
       notification.read = true
       this.updateUnreadCount()
 
       try {
-        await $fetch(`/api/notifications/${notificationId}/read`, {
-          method: 'PUT',
-          credentials: 'include'
+        await fetchAPI(`/api/notifications/${notificationId}/read`, {
+          method: 'PUT'
         })
       } catch (error) {
         notification.read = false
@@ -123,21 +136,20 @@ export const useNotificationsStore = defineStore('notifications', {
     },
 
     async markAllAsRead() {
-      const unreadIds = this.unreadNotifications.map(n => n.id)
+      const unreadIds = this.unreadNotifications.map((n: Notification) => n.id)
       
-      this.notifications.forEach(n => {
+      this.notifications.forEach((n: Notification) => {
         if (!n.read) n.read = true
       })
       this.updateUnreadCount()
 
       try {
-        await $fetch('/api/notifications/mark-all-read', {
-          method: 'PUT',
-          credentials: 'include'
+        await fetchAPI('/api/notifications/mark-all-read', {
+          method: 'PUT'
         })
       } catch (error) {
-        unreadIds.forEach(id => {
-          const notification = this.notifications.find(n => n.id === id)
+        unreadIds.forEach((id: string) => {
+          const notification = this.notifications.find((n: Notification) => n.id === id)
           if (notification) notification.read = false
         })
         this.updateUnreadCount()
@@ -146,7 +158,7 @@ export const useNotificationsStore = defineStore('notifications', {
     },
 
     async deleteNotification(notificationId: string) {
-      const index = this.notifications.findIndex(n => n.id === notificationId)
+      const index = this.notifications.findIndex((n: Notification) => n.id === notificationId)
       if (index === -1) return
 
       const notification = this.notifications[index]
@@ -155,9 +167,8 @@ export const useNotificationsStore = defineStore('notifications', {
       this.updateUnreadCount()
 
       try {
-        await $fetch(`/api/notifications/${notificationId}`, {
-          method: 'DELETE',
-          credentials: 'include'
+        await fetchAPI(`/api/notifications/${notificationId}`, {
+          method: 'DELETE'
         })
       } catch (error) {
         this.notifications.splice(index, 0, notification)
@@ -176,12 +187,10 @@ export const useNotificationsStore = defineStore('notifications', {
 
     async fetchPreferences() {
       try {
-        const { data } = await $fetch('/api/notifications/preferences', {
-          credentials: 'include'
-        })
+        const result = await fetchAPI('/api/notifications/preferences')
         
-        if (data) {
-          this.preferences = data
+        if (result?.data) {
+          this.preferences = result.data
         }
       } catch (error) {
         console.error('Failed to fetch notification preferences:', error)
@@ -192,10 +201,9 @@ export const useNotificationsStore = defineStore('notifications', {
       this.preferences = preferences
 
       try {
-        await $fetch('/api/notifications/preferences', {
+        await fetchAPI('/api/notifications/preferences', {
           method: 'PUT',
-          body: preferences,
-          credentials: 'include'
+          body: JSON.stringify(preferences)
         })
       } catch (error) {
         console.error('Failed to update notification preferences:', error)
@@ -204,7 +212,7 @@ export const useNotificationsStore = defineStore('notifications', {
     },
 
     addNotification(notification: Notification) {
-      const exists = this.notifications.find(n => n.id === notification.id)
+      const exists = this.notifications.find((n: Notification) => n.id === notification.id)
       if (!exists) {
         this.notifications.unshift(notification)
         this.totalCount++
@@ -215,7 +223,7 @@ export const useNotificationsStore = defineStore('notifications', {
     },
 
     updateUnreadCount() {
-      this.unreadCount = this.notifications.filter(n => !n.read).length
+      this.unreadCount = this.notifications.filter((n: Notification) => !n.read).length
     },
 
     clearNotifications() {
@@ -229,17 +237,16 @@ export const useNotificationsStore = defineStore('notifications', {
 
     async createNotification(notification: Partial<Notification>) {
       try {
-        const { data } = await $fetch('/api/notifications', {
+        const result = await fetchAPI('/api/notifications', {
           method: 'POST',
-          body: notification,
-          credentials: 'include'
+          body: JSON.stringify(notification)
         })
         
-        if (data) {
-          this.addNotification(data)
+        if (result?.data) {
+          this.addNotification(result.data)
         }
         
-        return data
+        return result?.data
       } catch (error) {
         console.error('Failed to create notification:', error)
         throw error
