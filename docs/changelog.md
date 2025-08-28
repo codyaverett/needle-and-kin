@@ -1,5 +1,60 @@
 # Changelog - Needle & Kin Project
 
+## Version 2.4.0 - Admin Panel Backend (2024-12-28)
+
+### 🎨 New Features
+
+#### Admin Post Management
+- **GET /api/admin/posts** - List all posts with admin metadata
+  - Advanced filtering (status, category, author, search)
+  - Sorting options (date, views, likes, SEO score)
+  - Pagination support
+  - Draft and scheduled post support
+  
+- **POST /api/admin/posts** - Create new blog posts
+  - Full validation for all fields
+  - Auto slug generation
+  - Reading time calculation
+  - SEO metadata support
+  - Draft/published/scheduled status
+  
+- **PUT /api/admin/posts/[id]** - Update existing posts
+  - Partial updates supported
+  - Author permission checking
+  - Revision history tracking
+  - Activity logging
+  
+- **DELETE /api/admin/posts/[id]** - Delete posts
+  - Soft delete (archive) option
+  - Hard delete with backup
+  - Admin-only permission
+  - Activity logging
+
+#### Admin User Management
+- **GET /api/admin/users** - List all users with admin data
+  - Role filtering (admin, author, user)
+  - Status filtering (active, inactive, suspended)
+  - Search by name, email, username
+  - Extended user statistics
+  - Account age and activity tracking
+
+#### Technical Features
+- **Permission System** - Role-based access control
+  - Admin-only endpoints
+  - Author content ownership
+  - JWT authentication validation
+  
+- **Activity Logging** - Track all admin actions
+- **Revision History** - Post change tracking
+- **Backup System** - Automatic backups before deletion
+
+### 📊 Statistics
+- **5 New Admin Endpoints** created
+- **Admin coverage** ~50% complete (backend done, UI pending)
+- **Total API endpoints:** 24
+
+---
+
 ## Version 2.3.0 - Blog Interaction Features (2024-12-28)
 
 ### 🎨 New Features

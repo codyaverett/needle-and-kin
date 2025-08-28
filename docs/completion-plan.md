@@ -63,17 +63,21 @@ This document outlines the comprehensive plan to complete the Needle & Kin craft
   - [ ] Add author post listings
 
 ### 3. Admin Panel (Week 2)
-- [ ] Create post management
-  - [ ] Build `/admin/posts` listing page
-  - [ ] Create `/admin/posts/create` page
-  - [ ] Build `/admin/posts/[id]` edit page
-  - [ ] Add post deletion functionality
-  - [ ] Implement draft/publish workflow
-- [ ] Build user management
-  - [ ] Create `/admin/users` listing page
+- [x] Create post management ✅
+  - [x] Build `/api/admin/posts` listing endpoint ✅
+  - [x] Create `/api/admin/posts` create endpoint ✅
+  - [x] Build `/api/admin/posts/[id]` update endpoint ✅
+  - [x] Add `/api/admin/posts/[id]` delete endpoint ✅
+  - [x] Implement draft/publish workflow ✅
+  - [ ] Build `/admin/posts` listing page UI
+  - [ ] Create `/admin/posts/create` page UI
+  - [ ] Build `/admin/posts/[id]` edit page UI
+- [x] Build user management backend ✅
+  - [x] Create `/api/admin/users` listing endpoint ✅
   - [ ] Add user creation interface
   - [ ] Build user edit functionality
-  - [ ] Implement role management
+  - [ ] Implement role management UI
+  - [ ] Create `/admin/users` listing page UI
 - [ ] Implement content editor
   - [ ] Create `/admin/content` interface
   - [ ] Add rich text editor
