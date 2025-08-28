@@ -1,5 +1,92 @@
 # Changelog - Needle & Kin Project
 
+## Version 2.3.0 - Blog Interaction Features (2024-12-28)
+
+### 🎨 New Features
+
+#### Blog Interaction System
+- **Comments System** - Complete commenting functionality with GET/POST endpoints
+  - Nested replies support
+  - User authentication integration
+  - Comment sanitization and validation
+  - Like tracking for comments
+  
+- **View Tracking** - Automatic view counting for blog posts
+  - Unique view tracking per user/IP
+  - Anonymous and authenticated user support
+  
+- **Like/Favorite System** - Post liking functionality
+  - Toggle like/unlike with authentication
+  - Like count tracking
+  - Notification support
+  
+- **Related Posts** - Smart related content suggestions
+  - Algorithm-based recommendations
+  - Customizable limits and filtering
+  
+- **Search API** - Full-featured blog search
+  - Full-text search across posts
+  - Category and tag filtering
+  - Relevance scoring
+  - Search suggestions
+  - Pagination support
+
+#### Technical Features
+- **Mock Data System** - Comprehensive blog data utilities
+- **In-Memory Storage** - Development-ready storage for views/likes
+- **Content Sanitization** - XSS protection for user content
+- **Test Coverage** - 21 new tests for interaction features
+
+### 📊 Statistics
+- **6 New API Endpoints** created
+- **21 Tests** added (215 total passing)
+- **Blog interaction coverage** ~75% complete
+
+---
+
+## Version 2.2.0 - User Profile Management (2024-12-28)
+
+### 🎨 New Features
+
+#### User Profile Management System
+- **Added `/api/user/profile` endpoints** - Complete user profile management with GET/PUT operations
+- **Implemented `/api/user/preferences` endpoints** - User preference management for newsletters, notifications, and favorite categories
+- **Created `/api/user/crafting-profile` endpoints** - Specialized crafting profile with skill levels, interests, tools, and materials
+- **Added `/api/user/stats` endpoint** - Comprehensive user statistics including achievements, project counts, and activity metrics
+
+#### API Features
+- **Profile Validation** - Input validation and sanitization for all profile fields
+- **Authentication Integration** - JWT-based authentication for all user endpoints
+- **Mock Data System** - Fully functional mock data for development and testing
+- **Error Handling** - Comprehensive error handling with proper status codes
+
+#### Testing Coverage
+- **Profile Endpoint Tests** - Complete test suite for profile GET/PUT operations (9 tests)
+- **Preferences Tests** - Full coverage of preference management endpoints (7 tests)
+- **Authentication Mocking** - Proper JWT and authentication mocking for tests
+- **194 Total Tests Passing** - All tests green with new user management features
+
+### 🔧 Technical Improvements
+- **TypeScript Types** - Extended auth types with UserPreferences and UserStats interfaces
+- **Consistent API Design** - Standardized response structures across all endpoints
+- **Security** - Token validation and proper authentication checks
+- **Data Sanitization** - Input trimming and validation for all user inputs
+
+### 📚 Documentation Updates
+- **Completion Plan** - Created comprehensive project completion plan with phases and timelines
+- **API Documentation** - Documented all new user management endpoints
+- **Test Documentation** - Added testing patterns and examples
+
+### ✅ Completed Tasks
+- User profile GET/PUT endpoints ✅
+- User preferences management ✅
+- Crafting profile system ✅
+- User statistics endpoint ✅
+- Profile validation and sanitization ✅
+- Complete test coverage ✅
+
+---
+
 ## Version 2.1.0 - Storybook Integration (2024-08-26)
 
 ### 🎨 New Features

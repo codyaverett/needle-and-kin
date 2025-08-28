@@ -8,6 +8,7 @@ global.getHeader = vi.fn()
 global.getCookie = vi.fn()
 global.setCookie = vi.fn()
 global.deleteCookie = vi.fn()
+global.getRouterParam = vi.fn()
 global.createError = vi.fn((error) => {
   const err = new Error(error.statusMessage || 'Error')
   err.statusCode = error.statusCode

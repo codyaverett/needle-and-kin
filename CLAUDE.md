@@ -1,3 +1,5 @@
 - this project should always use pnpm instead of npm
 - After making changes we should always update the documentation in docs/
 - When adding new features always follow Test driven development cycles to ensure code code is tested and covered
+- When making new features, keep track of the semver and update package.json, create a git tag, create a github release, then stop and recommend a multiline commit message detailing the updates, bug fixes, and changes
+- When recommending what a git commit should be always specify a description detailed and related to the files changed, output using commitizen formatting
