@@ -14,6 +14,9 @@
         <div class="flex items-center justify-between mb-1">
           <div class="flex items-center space-x-2">
             <span class="font-medium text-gray-900">{{ comment.userName }}</span>
+            <span v-if="comment.isPinned" class="px-2 py-0.5 bg-purple-100 text-purple-700 text-xs rounded">Pinned</span>
+            <span v-if="comment.userRole === 'moderator'" class="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded">Mod</span>
+            <span v-if="comment.userRole === 'admin'" class="px-2 py-0.5 bg-red-100 text-red-700 text-xs rounded">Admin</span>
             <span class="text-sm text-gray-500">•</span>
             <time :datetime="comment.createdAt" class="text-sm text-gray-500">
               {{ formatDate(comment.createdAt) }}
@@ -22,7 +25,7 @@
           </div>
           
           <!-- Actions Menu -->
-          <div v-if="isAuthor" class="relative">
+          <div v-if="isAuthor || isModerator" class="relative">
             <button
               @click="showMenu = !showMenu"
               class="p-1 text-gray-400 hover:text-gray-600 transition-colors"
@@ -35,14 +38,58 @@
             <!-- Dropdown Menu -->
             <div
               v-if="showMenu"
-              class="absolute right-0 mt-1 w-32 bg-white rounded-md shadow-lg border border-gray-200 z-10"
+              class="absolute right-0 mt-1 w-40 bg-white rounded-md shadow-lg border border-gray-200 z-10"
             >
               <button
+                v-if="isAuthor"
                 @click="startEdit"
                 class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
               >
                 Edit
               </button>
+              <button
+                v-if="isModerator && !comment.isPinned"
+                @click="$emit('pin', comment.id)"
+                class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+              >
+                <svg class="inline w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M11 3a1 1 0 10-2 0v1a1 1 0 002 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16v-1h4v1a2 2 0 11-4 0zM12 14c.015-.34.208-.646.477-.859a4 4 0 10-4.954 0c.27.213.462.519.476.859h4.002z" />
+                </svg>
+                Pin Comment
+              </button>
+              <button
+                v-if="isModerator && comment.isPinned"
+                @click="$emit('unpin', comment.id)"
+                class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+              >
+                Unpin Comment
+              </button>
+              <button
+                v-if="isModerator && !comment.isHidden"
+                @click="$emit('hide', comment.id)"
+                class="block w-full text-left px-4 py-2 text-sm text-amber-600 hover:bg-amber-50"
+              >
+                <svg class="inline w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z" clip-rule="evenodd" />
+                  <path d="M12.454 16.697L9.75 13.992a4 4 0 01-3.742-3.741L2.335 6.578A9.98 9.98 0 00.458 10c1.274 4.057 5.065 7 9.542 7 .847 0 1.669-.105 2.454-.303z" />
+                </svg>
+                Hide Comment
+              </button>
+              <button
+                v-if="isModerator && comment.isHidden"
+                @click="$emit('unhide', comment.id)"
+                class="block w-full text-left px-4 py-2 text-sm text-green-600 hover:bg-green-50"
+              >
+                Show Comment
+              </button>
+              <button
+                v-if="isModerator && !isAuthor"
+                @click="$emit('report', comment.id)"
+                class="block w-full text-left px-4 py-2 text-sm text-orange-600 hover:bg-orange-50"
+              >
+                Flag for Review
+              </button>
+              <hr v-if="isModerator || isAuthor" class="my-1" />
               <button
                 @click="$emit('delete', comment.id)"
                 class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
@@ -183,13 +230,17 @@ const props = defineProps({
     type: String,
     default: null
   },
+  currentUserRole: {
+    type: String,
+    default: 'user'
+  },
   isReply: {
     type: Boolean,
     default: false
   }
 })
 
-const emit = defineEmits(['like', 'reply', 'edit', 'delete'])
+const emit = defineEmits(['like', 'reply', 'edit', 'delete', 'pin', 'unpin', 'hide', 'unhide', 'report'])
 
 const showMenu = ref(false)
 const showReplyForm = ref(false)
@@ -199,6 +250,10 @@ const editContent = ref('')
 
 const isAuthor = computed(() => 
   props.currentUserId && props.comment.userId === props.currentUserId
+)
+
+const isModerator = computed(() => 
+  props.currentUserRole === 'moderator' || props.currentUserRole === 'admin'
 )
 
 const formatDate = (dateString) => {

@@ -41,21 +41,42 @@
           <!-- Basic Information Tab -->
           <div v-if="activeTab === 'basic'" class="space-y-6">
             <div class="flex items-center space-x-6">
-              <div class="shrink-0">
+              <div class="shrink-0 relative group">
                 <img
                   :src="profile.avatar || '/avatars/default.jpg'"
                   alt="Profile"
                   class="h-20 w-20 rounded-full object-cover"
                 >
+                <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 rounded-full flex items-center justify-center transition-opacity">
+                  <button
+                    @click="showAvatarUpload = true"
+                    type="button"
+                    class="opacity-0 group-hover:opacity-100 text-white transition-opacity"
+                  >
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  </button>
+                </div>
               </div>
               <div>
                 <button
+                  @click="showAvatarUpload = true"
                   type="button"
                   class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
                 >
                   Change Avatar
                 </button>
                 <p class="mt-1 text-sm text-gray-500">JPG, GIF or PNG. Max size 2MB</p>
+                <button
+                  v-if="profile.avatar && profile.avatar !== '/avatars/default.jpg'"
+                  @click="removeAvatar"
+                  type="button"
+                  class="mt-2 text-sm text-red-600 hover:text-red-700"
+                >
+                  Remove Avatar
+                </button>
               </div>
             </div>
 
@@ -255,6 +276,63 @@
         </div>
       </div>
     </div>
+
+    <!-- Avatar Upload Modal -->
+    <Teleport to="body">
+      <div v-if="showAvatarUpload" class="fixed inset-0 z-50 overflow-hidden">
+        <div @click="showAvatarUpload = false" class="fixed inset-0 bg-gray-900 bg-opacity-50 transition-opacity"></div>
+        
+        <div class="fixed inset-0 overflow-hidden">
+          <div class="flex items-center justify-center min-h-full p-4">
+            <div class="relative bg-white rounded-xl shadow-xl max-w-2xl w-full">
+              <!-- Modal Header -->
+              <div class="px-6 py-4 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                  <h2 class="text-xl font-semibold text-gray-900">Upload Avatar</h2>
+                  <button
+                    @click="showAvatarUpload = false"
+                    class="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Modal Body -->
+              <div class="p-6">
+                <MediaUpload
+                  :accept="'image/*'"
+                  :multiple="false"
+                  :max-size="2097152"
+                  :auto-upload="false"
+                  @select="handleAvatarSelect"
+                  @uploaded="handleAvatarUploaded"
+                />
+              </div>
+
+              <!-- Modal Footer -->
+              <div class="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-end space-x-3">
+                <button
+                  @click="showAvatarUpload = false"
+                  class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  @click="uploadSelectedAvatar"
+                  :disabled="!selectedAvatarFile"
+                  class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  Set as Avatar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 
@@ -272,6 +350,8 @@ const activeTab = ref('basic')
 const isSaving = ref(false)
 const successMessage = ref('')
 const errorMessage = ref('')
+const showAvatarUpload = ref(false)
+const selectedAvatarFile = ref(null)
 
 const tabs = [
   { id: 'basic', name: 'Basic Information' },
@@ -414,6 +494,42 @@ const saveProfile = async () => {
 const resetForm = () => {
   // Reset to original values
   navigateTo('/profile')
+}
+
+const handleAvatarSelect = (files) => {
+  if (files.length > 0) {
+    selectedAvatarFile.value = files[0]
+  }
+}
+
+const handleAvatarUploaded = (uploadedFiles) => {
+  if (uploadedFiles.length > 0) {
+    profile.value.avatar = uploadedFiles[0].url
+    showAvatarUpload.value = false
+    selectedAvatarFile.value = null
+    
+    // Save the profile with new avatar
+    saveProfile()
+  }
+}
+
+const uploadSelectedAvatar = async () => {
+  if (selectedAvatarFile.value && selectedAvatarFile.value.preview) {
+    // In a real app, upload to server
+    // For now, use the preview as the avatar
+    profile.value.avatar = selectedAvatarFile.value.preview
+    showAvatarUpload.value = false
+    selectedAvatarFile.value = null
+    
+    // Save the profile with new avatar
+    saveProfile()
+  }
+}
+
+const removeAvatar = () => {
+  profile.value.avatar = '/avatars/default.jpg'
+  // Save the profile with default avatar
+  saveProfile()
 }
 
 useHead({
