@@ -152,16 +152,19 @@ describe('Blog Interaction Endpoints', () => {
     })
 
     it('should not count duplicate views', async () => {
-      const event = { node: { req: { socket: { remoteAddress: '192.168.1.1' } } } } as any
+      // Use a unique IP for this test to avoid conflicts with other tests
+      const testIp = '192.168.99.99'
+      const event = { node: { req: { socket: { remoteAddress: testIp } } } } as any
       
       // First view
       const result1 = await viewsHandler(event)
       expect(result1.isNewView).toBe(true)
+      const initialCount = result1.viewCount
       
-      // Second view from same IP
+      // Second view from same IP - should not increase count
       const result2 = await viewsHandler(event)
       expect(result2.isNewView).toBe(false)
-      expect(result2.viewCount).toBe(result1.viewCount)
+      expect(result2.viewCount).toBe(initialCount)
     })
   })
 

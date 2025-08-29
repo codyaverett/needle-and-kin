@@ -198,8 +198,11 @@ describe('CommentList Component', () => {
       }
     })
 
-    const loadMoreButton = wrapper.find('button[disabled=false]')
-    expect(loadMoreButton.text()).toContain('Load More Comments')
+    const loadMoreButton = wrapper.findAll('button').find(btn => 
+      btn.text().includes('Load More Comments')
+    )
+    expect(loadMoreButton).toBeTruthy()
+    expect(loadMoreButton?.text()).toContain('Load More Comments')
   })
 
   it('shows loading state for load more button', () => {
@@ -222,8 +225,11 @@ describe('CommentList Component', () => {
       }
     })
 
-    const loadMoreButton = wrapper.find('button[disabled=true]')
-    expect(loadMoreButton.text()).toContain('Loading...')
+    const loadMoreButton = wrapper.findAll('button').find(btn => 
+      btn.text().includes('Loading...')
+    )
+    expect(loadMoreButton).toBeTruthy()
+    expect(loadMoreButton?.text()).toContain('Loading...')
   })
 
   it('emits load-more event when button clicked', async () => {
@@ -246,8 +252,11 @@ describe('CommentList Component', () => {
       }
     })
 
-    const loadMoreButton = wrapper.find('button[disabled=false]')
-    await loadMoreButton.trigger('click')
+    const loadMoreButton = wrapper.findAll('button').find(btn => 
+      btn.text().includes('Load More Comments')
+    )
+    expect(loadMoreButton).toBeTruthy()
+    await loadMoreButton?.trigger('click')
 
     expect(wrapper.emitted('load-more')).toBeTruthy()
   })

@@ -113,6 +113,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useUserStore } from '~/stores/user'
+import CommentItem from '~/components/CommentItem.vue'
 
 const props = defineProps({
   comments: {

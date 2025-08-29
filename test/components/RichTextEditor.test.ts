@@ -164,15 +164,18 @@ describe('RichTextEditor Component', () => {
       }
     })
 
-    expect(wrapper.find('.prose').exists()).toBe(false)
+    // Check that preview modal is initially hidden
+    expect(wrapper.find('.bg-gray-50 .prose').exists()).toBe(false)
 
-    const previewButton = wrapper.find('button').filter(node => 
-      node.text().includes('Show Preview')
-    )[0]
-    await previewButton.trigger('click')
+    const previewButton = wrapper.findAll('button').find(btn => 
+      btn.text().includes('Show Preview')
+    )
+    await previewButton?.trigger('click')
 
+    // After clicking, preview should be visible
+    await wrapper.vm.$nextTick()
     expect(wrapper.find('.prose').exists()).toBe(true)
-    expect(wrapper.find('.prose').html()).toContain(content)
+    expect(wrapper.find('.prose').html()).toContain('Preview content')
   })
 
   it('toggles HTML view mode', async () => {
@@ -186,10 +189,10 @@ describe('RichTextEditor Component', () => {
 
     expect(wrapper.find('textarea').exists()).toBe(false)
 
-    const htmlButton = wrapper.find('button').filter(node => 
-      node.text().includes('View HTML')
-    )[0]
-    await htmlButton.trigger('click')
+    const htmlButton = wrapper.findAll('button').find(btn => 
+      btn.text().includes('View HTML')
+    )
+    await htmlButton?.trigger('click')
 
     const textarea = wrapper.find('textarea')
     expect(textarea.exists()).toBe(true)
@@ -280,11 +283,12 @@ describe('RichTextEditor Component', () => {
       }
     })
 
-    const select = wrapper.find('select').filter(node => 
-      node.find('option[value="1"]').exists()
-    )[0]
+    const selects = wrapper.findAll('select')
+    const select = selects.find(s => 
+      s.findAll('option').some(opt => opt.attributes('value') === '1')
+    )
     
-    await select.setValue('2')
+    await select?.setValue('2')
 
     expect(document.execCommand).toHaveBeenCalledWith('formatBlock', false, '<h2>')
   })

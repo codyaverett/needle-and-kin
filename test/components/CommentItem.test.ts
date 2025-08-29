@@ -104,14 +104,34 @@ describe('CommentItem Component', () => {
       }
     })
 
+    // Click the Reply button to show the reply form
     const replyButton = wrapper.findAll('button').find(btn => btn.text().includes('Reply'))
+    expect(replyButton).toBeTruthy()
     await replyButton?.trigger('click')
     
+    // Wait for the form to appear
+    await wrapper.vm.$nextTick()
+    
+    // Find and fill the reply input
     const replyInput = wrapper.find('input[placeholder*="reply"]')
+    expect(replyInput.exists()).toBe(true)
     await replyInput.setValue('This is a reply')
     
-    const submitButton = wrapper.findAll('button').find(btn => btn.text() === 'Reply' && btn.element.parentElement?.className.includes('flex'))
-    await submitButton?.trigger('click')
+    // Wait for Vue to update after setting the value
+    await wrapper.vm.$nextTick()
+    
+    // Find the submit button - it should not be disabled now
+    const submitButtons = wrapper.findAll('button').filter(btn => btn.text() === 'Reply')
+    // The second Reply button is the submit button (first is the original reply toggle)
+    const submitButton = submitButtons[1]
+    
+    expect(submitButton).toBeTruthy()
+    expect(submitButton.attributes('disabled')).toBeUndefined()
+    
+    await submitButton.trigger('click')
+    
+    // Wait for the event to be emitted
+    await wrapper.vm.$nextTick()
     
     expect(wrapper.emitted('reply')).toBeTruthy()
     expect(wrapper.emitted('reply')?.[0]).toEqual([{
