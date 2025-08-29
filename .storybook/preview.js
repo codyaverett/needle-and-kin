@@ -1,9 +1,11 @@
 import '../assets/css/main.css';
 import { setup } from '@storybook/vue3';
+import { createPinia } from 'pinia';
 
 // Setup Vue app if needed
 setup((app) => {
-  // Add any global components or plugins here if needed
+  // Add Pinia for state management
+  app.use(createPinia());
 });
 
 /** @type { import('@storybook/vue3').Preview } */

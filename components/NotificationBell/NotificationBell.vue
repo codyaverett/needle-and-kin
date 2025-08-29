@@ -72,7 +72,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { vClickOutside } from '@vueuse/components'
+import { vOnClickOutside as vClickOutside } from '@vueuse/components'
 import { useNotificationsStore } from '~/stores/notifications'
 
 const notificationsStore = useNotificationsStore()

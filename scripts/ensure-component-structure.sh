@@ -5,7 +5,6 @@
 # - ./components/[ComponentName]/[ComponentName].vue
 # - ./components/[ComponentName]/__tests__/[ComponentName].test.ts
 # - ./components/[ComponentName]/[ComponentName].stories.js
-# - ./components/[ComponentName]/index.js (for exports)
 
 set -e
 
@@ -89,16 +88,6 @@ EOF
     echo -e "${GREEN}  ✓ Created story file${NC}"
 }
 
-# Function to create index.js for exports
-create_index_file() {
-    local component_name=$1
-    local index_file=$2
-    
-    cat > "$index_file" << EOF
-export { default } from './${component_name}.vue';
-EOF
-    echo -e "${GREEN}  ✓ Created index.js${NC}"
-}
 
 # Function to process a component
 process_component() {
@@ -173,15 +162,6 @@ process_component() {
         echo -e "${GREEN}  ✓ Storybook story exists${NC}"
     fi
     
-    # Check for index.js
-    local index_file="${component_dir}/index.js"
-    if [ ! -f "$index_file" ]; then
-        echo -e "${YELLOW}  ⚠ Missing index.js${NC}"
-        create_index_file "$component_name" "$index_file"
-        has_issues=true
-    else
-        echo -e "${GREEN}  ✓ index.js exists${NC}"
-    fi
     
     if [ "$has_issues" = true ]; then
         ISSUES_FOUND=$((ISSUES_FOUND + 1))
@@ -232,7 +212,6 @@ for dir in components/*/; do
         test_dir="${dir}__tests__"
         story_file="${dir}${component_name}.stories.js"
         story_file_ts="${dir}${component_name}.stories.ts"
-        index_file="${dir}index.js"
         
         if [ -f "$vue_file" ]; then
             echo -e "  ${GREEN}✓${NC} ${component_name}.vue"
@@ -253,11 +232,6 @@ for dir in components/*/; do
             echo -e "  ${RED}✗${NC} ${component_name}.stories.js"
         fi
         
-        if [ -f "$index_file" ]; then
-            echo -e "  ${GREEN}✓${NC} index.js"
-        else
-            echo -e "  ${RED}✗${NC} index.js"
-        fi
     fi
 done
 

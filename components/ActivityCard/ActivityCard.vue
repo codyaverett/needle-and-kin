@@ -187,7 +187,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { vClickOutside } from '@vueuse/components'
+import { vOnClickOutside as vClickOutside } from '@vueuse/components'
 import type { Activity } from '~/types/activity'
 
 const props = withDefaults(defineProps<{

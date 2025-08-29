@@ -13,8 +13,7 @@ components/
 │   ├── ComponentName.vue          # Main component file
 │   ├── __tests__/                 # Test directory
 │   │   └── ComponentName.test.ts  # Test file(s)
-│   ├── ComponentName.stories.js   # Storybook stories
-│   └── index.js                   # Export file
+│   └── ComponentName.stories.js   # Storybook stories
 ```
 
 ## Automated Structure Validation
@@ -32,8 +31,7 @@ This script will:
 2. **Create test directories** - Add `__tests__/` folder if missing
 3. **Generate test files** - Create basic test files with starter tests
 4. **Generate Storybook stories** - Create story files with basic structure
-5. **Create index files** - Add export files for clean imports
-6. **Provide a summary** - Show which components were fixed and what's still needed
+5. **Provide a summary** - Show which components were fixed and what's still needed
 
 ### What the Script Does
 
@@ -42,7 +40,6 @@ This script will:
 - ✅ Creates `__tests__/` directory if missing
 - ✅ Generates `ComponentName.test.ts` with basic tests if missing
 - ✅ Creates `ComponentName.stories.js` with starter stories if missing
-- ✅ Adds `index.js` for clean exports if missing
 
 #### Generated Test Template:
 ```typescript
@@ -144,9 +141,6 @@ touch components/MyComponent/__tests__/MyComponent.test.ts
 
 # 4. Create story file
 touch components/MyComponent/MyComponent.stories.js
-
-# 5. Create index file
-echo "export { default } from './MyComponent.vue';" > components/MyComponent/index.js
 ```
 
 ## Import Patterns
@@ -156,9 +150,6 @@ With this structure, components can be imported in multiple ways:
 ```javascript
 // Direct import
 import MyComponent from '~/components/MyComponent/MyComponent.vue'
-
-// Via index file
-import MyComponent from '~/components/MyComponent'
 
 // Auto-import (Nuxt)
 // Components are automatically available without imports

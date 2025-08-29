@@ -94,7 +94,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { vClickOutside } from '@vueuse/components'
+import { vOnClickOutside as vClickOutside } from '@vueuse/components'
 
 interface SharePlatform {
   name: string
