@@ -25,7 +25,7 @@ export default defineNuxtConfig({
   },
   vite: {
     server: {
-      allowedHosts: ['*.ngrok-free.app', '4011de57d201.ngrok-free.app'],
+      allowedHosts: ['*.ngrok-free.app', '377da13b0e2f.ngrok-free.app'],
       hmr: {
         clientPort: 443
       }

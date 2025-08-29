@@ -1,14 +1,21 @@
 <template>
   <div>
-    <section class="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-16">
-      <div class="container mx-auto px-4 text-center">
-        <h1 class="text-4xl font-bold mb-6">{{ aboutData?.hero.title }}</h1>
-        <p class="text-xl max-w-2xl mx-auto">
-          {{ aboutData?.hero.description }}
-        </p>
+    <section class="relative overflow-hidden h-[500px]">
+      <!-- QuiltSimulation as background -->
+      <div class="absolute inset-0 z-0">
+        <QuiltSimulation />
+      </div>
+      
+      <!-- Hero content with overlay -->
+      <div class="relative z-10 h-full flex items-center justify-center bg-gradient-to-r from-purple-600/80 to-pink-600/80">
+        <div class="container mx-auto px-4 text-center text-white">
+          <h1 class="text-5xl font-bold mb-6 drop-shadow-lg">{{ aboutData?.hero.title }}</h1>
+          <p class="text-xl max-w-2xl mx-auto drop-shadow-md">
+            {{ aboutData?.hero.description }}
+          </p>
+        </div>
       </div>
     </section>
-    <QuiltSimulation />
 
     <section class="py-16">
       <div class="container mx-auto px-4">
@@ -111,7 +118,7 @@
 </template>
 
 <script setup>
-import QuiltSimulation from '../../components/QuiltSimulation.vue';
+import QuiltSimulation from '~/components/QuiltSimulation/QuiltSimulation.vue';
 const { data: aboutData } = await useFetch('/api/about')
 
 useHead({
