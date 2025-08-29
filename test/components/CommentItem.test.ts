@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
-import CommentItem from '~/components/CommentItem.vue'
+import CommentItem from '~/components/CommentItem/CommentItem.vue'
 
 describe('CommentItem Component', () => {
   const mockComment = {

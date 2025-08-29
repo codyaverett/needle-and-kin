@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { createTestingPinia } from '@pinia/testing'
-import CommentList from '~/components/CommentList.vue'
-import CommentItem from '~/components/CommentItem.vue'
+import CommentList from '~/components/CommentList/CommentList.vue'
+import CommentItem from '~/components/CommentItem/CommentItem.vue'
 
 // Mock $fetch
 global.$fetch = vi.fn()

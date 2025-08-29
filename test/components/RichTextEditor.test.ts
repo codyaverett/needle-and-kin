@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
-import RichTextEditor from '~/components/RichTextEditor.vue'
+import RichTextEditor from '~/components/RichTextEditor/RichTextEditor.vue'
 
 // Mock document.execCommand
 global.document.execCommand = vi.fn(() => true)
