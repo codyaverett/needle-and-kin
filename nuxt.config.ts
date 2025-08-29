@@ -2,6 +2,7 @@
 import { fileURLToPath } from 'node:url'
 
 export default defineNuxtConfig({
+  compatibilityDate: '2025-08-28',
   devtools: { enabled: true },
   css: ['~/assets/css/main.css'],
   modules: [
