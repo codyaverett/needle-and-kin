@@ -1,0 +1,371 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// User and Authentication
+model User {
+  id                String    @id @default(cuid())
+  email             String    @unique
+  username          String    @unique
+  password          String
+  firstName         String
+  lastName          String
+  avatar            String?
+  bio               String?
+  role              String    @default("user") // user, author, admin
+  isActive          Boolean   @default(true)
+  emailVerified     Boolean   @default(false)
+  mustChangePassword Boolean  @default(false)
+  joinedAt          DateTime  @default(now())
+  lastLogin         DateTime?
+  
+  // Relations
+  posts             Post[]    @relation("AuthorPosts")
+  projects          Project[]
+  comments          Comment[]
+  activities        Activity[]
+  notifications     Notification[]
+  sessions          Session[]
+  preferences       UserPreferences?
+  craftingProfile   CraftingProfile?
+  likedPosts        PostLike[]
+  likedProjects     ProjectLike[]
+  likedActivities   ActivityLike[]
+  following         Follow[]  @relation("Follower")
+  followers         Follow[]  @relation("Following")
+  newsletterSubscription NewsletterSubscription?
+  achievements      UserAchievement[]
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+model UserPreferences {
+  id                String    @id @default(cuid())
+  userId            String    @unique
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  newsletter        Boolean   @default(false)
+  emailNotifications Boolean  @default(true)
+  favoriteCategories String   // JSON array of categories
+  theme             String    @default("light")
+  language          String    @default("en")
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+model CraftingProfile {
+  id                String    @id @default(cuid())
+  userId            String    @unique
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  skillLevel        String?   // beginner, intermediate, advanced, expert
+  yearsOfExperience Int?
+  favoriteTools     String?   // JSON array
+  favoriteProjects  String?   // JSON array
+  currentProjects   String?   // JSON array
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+model Session {
+  id                String    @id @default(cuid())
+  userId            String
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  token             String    @unique
+  refreshToken      String    @unique
+  ipAddress         String?
+  userAgent         String?
+  remember          Boolean   @default(false)
+  expiresAt         DateTime
+  
+  createdAt         DateTime  @default(now())
+}
+
+// Blog Posts
+model Post {
+  id                String    @id @default(cuid())
+  slug              String    @unique
+  title             String
+  excerpt           String?
+  content           String
+  image             String?
+  
+  authorId          String
+  author            User      @relation("AuthorPosts", fields: [authorId], references: [id])
+  
+  category          String
+  tags              String    // JSON array
+  difficulty        String?   // beginner, intermediate, advanced
+  readTime          String?
+  
+  published         Boolean   @default(false)
+  publishedAt       DateTime?
+  featured          Boolean   @default(false)
+  
+  views             Int       @default(0)
+  
+  // Relations
+  comments          Comment[]
+  likes             PostLike[]
+  relatedPosts      PostRelation[] @relation("OriginalPost")
+  relatedTo         PostRelation[] @relation("RelatedPost")
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+model PostLike {
+  id                String    @id @default(cuid())
+  postId            String
+  post              Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId            String
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt         DateTime  @default(now())
+  
+  @@unique([postId, userId])
+}
+
+model PostRelation {
+  id                String    @id @default(cuid())
+  originalPostId    String
+  originalPost      Post      @relation("OriginalPost", fields: [originalPostId], references: [id], onDelete: Cascade)
+  relatedPostId     String
+  relatedPost       Post      @relation("RelatedPost", fields: [relatedPostId], references: [id], onDelete: Cascade)
+  
+  @@unique([originalPostId, relatedPostId])
+}
+
+// Projects
+model Project {
+  id                String    @id @default(cuid())
+  userId            String
+  user              User      @relation(fields: [userId], references: [id])
+  
+  title             String
+  description       String
+  coverImage        String?
+  images            String?   // JSON array
+  
+  category          String
+  difficulty        String    // beginner, intermediate, advanced
+  tags              String    // JSON array
+  
+  materials         String    // JSON array of materials
+  steps             String    // JSON array of steps
+  
+  progress          Int       @default(0)
+  status            String    @default("planning") // planning, in_progress, completed, abandoned
+  estimatedTime     String?
+  
+  views             Int       @default(0)
+  
+  // Relations
+  likes             ProjectLike[]
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+model ProjectLike {
+  id                String    @id @default(cuid())
+  projectId         String
+  project           Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId            String
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt         DateTime  @default(now())
+  
+  @@unique([projectId, userId])
+}
+
+// Comments
+model Comment {
+  id                String    @id @default(cuid())
+  content           String
+  
+  postId            String
+  post              Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  
+  userId            String
+  user              User      @relation(fields: [userId], references: [id])
+  
+  parentId          String?
+  parent            Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies           Comment[] @relation("CommentReplies")
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+// Activities
+model Activity {
+  id                String    @id @default(cuid())
+  userId            String
+  user              User      @relation(fields: [userId], references: [id])
+  
+  type              String    // post_created, project_started, achievement_earned, etc.
+  title             String
+  description       String?
+  metadata          String?   // JSON object for additional data
+  
+  // Relations
+  likes             ActivityLike[]
+  
+  createdAt         DateTime  @default(now())
+}
+
+model ActivityLike {
+  id                String    @id @default(cuid())
+  activityId        String
+  activity          Activity  @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  userId            String
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt         DateTime  @default(now())
+  
+  @@unique([activityId, userId])
+}
+
+// Notifications
+model Notification {
+  id                String    @id @default(cuid())
+  userId            String
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  type              String    // comment, like, follow, achievement, system
+  title             String
+  message           String
+  link              String?
+  read              Boolean   @default(false)
+  metadata          String?   // JSON object for additional data
+  
+  createdAt         DateTime  @default(now())
+}
+
+// Newsletter
+model NewsletterSubscription {
+  id                String    @id @default(cuid())
+  userId            String?   @unique
+  user              User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  email             String    @unique
+  name              String?
+  status            String    @default("active") // active, unsubscribed, bounced
+  preferences       String?   // JSON object for email preferences
+  
+  subscribedAt      DateTime  @default(now())
+  unsubscribedAt    DateTime?
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+// Follow System
+model Follow {
+  id                String    @id @default(cuid())
+  followerId        String
+  follower          User      @relation("Follower", fields: [followerId], references: [id], onDelete: Cascade)
+  followingId       String
+  following         User      @relation("Following", fields: [followingId], references: [id], onDelete: Cascade)
+  
+  createdAt         DateTime  @default(now())
+  
+  @@unique([followerId, followingId])
+}
+
+// Tutorials
+model Tutorial {
+  id                String    @id @default(cuid())
+  title             String
+  description       String
+  content           String
+  videoUrl          String?
+  thumbnailUrl      String?
+  
+  category          String
+  difficulty        String
+  duration          String?
+  materials         String?   // JSON array
+  tags              String?   // JSON array
+  
+  published         Boolean   @default(false)
+  featured          Boolean   @default(false)
+  views             Int       @default(0)
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+// Achievements
+model Achievement {
+  id                String    @id @default(cuid())
+  name              String    @unique
+  description       String
+  icon              String?
+  category          String    // crafting, community, learning, etc.
+  requirement       String    // JSON object defining requirements
+  points            Int       @default(10)
+  
+  // Relations
+  users             UserAchievement[]
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+model UserAchievement {
+  id                String    @id @default(cuid())
+  userId            String
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievementId     String
+  achievement       Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+  
+  earnedAt          DateTime  @default(now())
+  
+  @@unique([userId, achievementId])
+}
+
+// Site Content Management
+model SiteContent {
+  id                String    @id @default(cuid())
+  key               String    @unique // e.g., "homepage_hero", "about_content", etc.
+  content           String    // JSON object with the content
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+// Application Settings
+model AppSettings {
+  id                String    @id @default(cuid())
+  key               String    @unique
+  value             String    // JSON value
+  description       String?
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+// Admin Statistics (for caching)
+model Statistics {
+  id                String    @id @default(cuid())
+  key               String    @unique
+  value             String    // JSON object with stats
+  calculatedAt      DateTime  @default(now())
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
