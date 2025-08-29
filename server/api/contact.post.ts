@@ -1,3 +1,7 @@
+import { PrismaClient } from '@prisma/client'
+
+const prisma = new PrismaClient()
+
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
 
@@ -21,27 +25,48 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  // In a real implementation, you would:
-  // 1. Send email using a service like SendGrid, Mailgun, or Nodemailer
-  // 2. Store the contact submission in a database
-  // 3. Add to newsletter if they opted in
-  
-  // For now, we'll just log the submission and return success
-  console.log('Contact form submission:', {
-    name: body.name,
-    email: body.email,
-    subject: body.subject,
-    message: body.message,
-    newsletter: body.newsletter,
-    timestamp: new Date().toISOString()
-  })
+  try {
+    // Store the contact submission in the database
+    const submission = await prisma.contactSubmission.create({
+      data: {
+        name: body.name,
+        email: body.email,
+        subject: body.subject,
+        message: body.message,
+        newsletter: body.newsletter || false,
+      }
+    })
 
-  // Simulate email sending delay
-  await new Promise(resolve => setTimeout(resolve, 500))
+    // If they opted in for newsletter, add/update subscription
+    if (body.newsletter) {
+      await prisma.newsletterSubscription.upsert({
+        where: { email: body.email },
+        update: {
+          name: body.name,
+          status: 'active'
+        },
+        create: {
+          email: body.email,
+          name: body.name,
+          status: 'active'
+        }
+      })
+    }
 
-  return {
-    success: true,
-    message: 'Contact form submitted successfully',
-    timestamp: new Date().toISOString()
+    // TODO: Send email notification to admin
+    // TODO: Send confirmation email to user
+
+    return {
+      success: true,
+      message: 'Contact form submitted successfully',
+      submissionId: submission.id,
+      timestamp: submission.createdAt.toISOString()
+    }
+  } catch (error) {
+    console.error('Contact form submission error:', error)
+    throw createError({
+      statusCode: 500,
+      statusMessage: 'Failed to submit contact form'
+    })
   }
 })

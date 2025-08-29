@@ -369,3 +369,22 @@ model Statistics {
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 }
+
+// Contact Form Submissions
+model ContactSubmission {
+  id                String    @id @default(cuid())
+  name              String
+  email             String
+  subject           String
+  message           String
+  newsletter        Boolean   @default(false)
+  
+  status            String    @default("unread") // unread, read, responded, archived
+  adminNotes        String?
+  responseMessage   String?
+  respondedAt       DateTime?
+  respondedBy       String?
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}

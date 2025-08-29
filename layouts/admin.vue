@@ -44,6 +44,22 @@
           </NuxtLink>
           
           <NuxtLink
+            to="/admin/contact-submissions"
+            class="flex items-center justify-between rounded-lg px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-white"
+            :class="{ 'bg-gray-800 text-white': $route.path === '/admin/contact-submissions' }"
+          >
+            <div class="flex items-center">
+              <svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+              Messages
+            </div>
+            <span v-if="unreadMessagesCount > 0" class="ml-2 px-2 py-1 text-xs font-bold rounded-full bg-red-600 text-white">
+              {{ unreadMessagesCount }}
+            </span>
+          </NuxtLink>
+          
+          <NuxtLink
             to="/admin/content"
             class="flex items-center rounded-lg px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-white"
             :class="{ 'bg-gray-800 text-white': $route.path === '/admin/content' }"
@@ -126,11 +142,15 @@ const userStore = useUserStore()
 const route = useRoute()
 const router = useRouter()
 
+// Use the shared messages composable
+const { unreadMessagesCount, fetchUnreadCount } = useMessages()
+
 const pageTitle = computed(() => {
   const path = route.path
   if (path === '/admin') return 'Dashboard'
   if (path.startsWith('/admin/posts')) return 'Blog Posts'
   if (path.startsWith('/admin/users')) return 'User Management'
+  if (path === '/admin/contact-submissions') return 'Messages'
   if (path === '/admin/content') return 'Site Content'
   if (path === '/admin/settings') return 'Settings'
   return 'Admin'
@@ -140,4 +160,15 @@ const handleLogout = async () => {
   await userStore.logout()
   router.push('/')
 }
+
+// Fetch unread count on mount and periodically
+onMounted(() => {
+  fetchUnreadCount()
+  // Refresh count every 60 seconds (less frequent since we have instant updates now)
+  const interval = setInterval(fetchUnreadCount, 60000)
+  
+  onUnmounted(() => {
+    clearInterval(interval)
+  })
+})
 </script>
