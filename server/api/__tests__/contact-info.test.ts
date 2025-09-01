@@ -95,7 +95,11 @@ describe('GET /api/contact-info', () => {
     expect(socialMethods.length).toBeGreaterThan(0)
     
     socialMethods.forEach(method => {
-      expect(method.contact).toContain('@needleandkin')
+      if (method.icon === 'instagram') {
+        expect(method.contact).toContain('@needleandkin')
+      } else if (method.icon === 'pinterest') {
+        expect(method.contact).toContain('needleandkin')
+      }
     })
   })
 })

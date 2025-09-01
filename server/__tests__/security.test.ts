@@ -2,8 +2,25 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import contactHandler from '../api/contact.post'
 import loginHandler from '../api/auth/login.post'
 
+// Mock Prisma Client
+vi.mock('@prisma/client', () => {
+  const mockPrismaClient = {
+    contactSubmission: {
+      create: vi.fn()
+    },
+    newsletterSubscription: {
+      upsert: vi.fn()
+    }
+  }
+  return {
+    PrismaClient: vi.fn(() => mockPrismaClient)
+  }
+})
+
 describe('Security Tests', () => {
-  beforeEach(() => {
+  let mockPrisma: any
+
+  beforeEach(async () => {
     vi.clearAllMocks()
     global.readBody = vi.fn()
     global.createError = vi.fn((error) => {
@@ -12,6 +29,11 @@ describe('Security Tests', () => {
       return err
     })
     vi.spyOn(console, 'log').mockImplementation(() => {})
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+
+    // Get the mocked Prisma instance
+    const { PrismaClient } = await import('@prisma/client')
+    mockPrisma = new PrismaClient()
   })
 
   describe('Input Sanitization', () => {
@@ -23,21 +45,30 @@ describe('Security Tests', () => {
         message: '<svg onload=alert("xss")>malicious</svg>'
       }
 
+      const mockSubmission = {
+        id: 'test-id',
+        ...maliciousInput,
+        newsletter: false,
+        createdAt: new Date()
+      }
+
       global.readBody.mockResolvedValue(maliciousInput)
+      mockPrisma.contactSubmission.create.mockResolvedValue(mockSubmission)
 
       // Should not throw error but handle input safely
       const result = await contactHandler({})
       expect(result.success).toBe(true)
       
-      // Check that the logged data contains the input but server handled it
-      expect(console.log).toHaveBeenCalledWith(
-        'Contact form submission:',
-        expect.objectContaining({
+      // Verify the data was processed through Prisma
+      expect(mockPrisma.contactSubmission.create).toHaveBeenCalledWith({
+        data: {
           name: maliciousInput.name,
+          email: maliciousInput.email,
           subject: maliciousInput.subject,
-          message: maliciousInput.message
-        })
-      )
+          message: maliciousInput.message,
+          newsletter: false
+        }
+      })
     })
 
     it('should handle SQL injection attempts in email field', async () => {
@@ -49,12 +80,23 @@ describe('Security Tests', () => {
       ]
 
       for (const maliciousEmail of sqlInjectionAttempts) {
-        global.readBody.mockResolvedValue({
+        const requestData = {
           name: 'Test',
           email: maliciousEmail,
           subject: 'Test',
           message: 'Test message'
-        })
+        }
+
+        global.readBody.mockResolvedValue(requestData)
+        
+        const mockSubmission = {
+          id: 'test-id',
+          ...requestData,
+          newsletter: false,
+          createdAt: new Date()
+        }
+        
+        mockPrisma.contactSubmission.create.mockResolvedValue(mockSubmission)
 
         // Should either reject invalid email format or handle safely
         try {
@@ -70,13 +112,22 @@ describe('Security Tests', () => {
 
     it('should handle extremely long input strings', async () => {
       const longString = 'A'.repeat(100000)
-      
-      global.readBody.mockResolvedValue({
+      const requestData = {
         name: 'Test User',
         email: 'test@example.com',
         subject: 'Test Subject',
         message: longString
-      })
+      }
+      
+      const mockSubmission = {
+        id: 'test-id',
+        ...requestData,
+        newsletter: false,
+        createdAt: new Date()
+      }
+      
+      global.readBody.mockResolvedValue(requestData)
+      mockPrisma.contactSubmission.create.mockResolvedValue(mockSubmission)
 
       // Should handle long input gracefully
       const result = await contactHandler({})
@@ -91,7 +142,15 @@ describe('Security Tests', () => {
         message: 'Message with émojis 🎨 and ñ characters & symbols!'
       }
 
+      const mockSubmission = {
+        id: 'test-id',
+        ...specialCharsInput,
+        newsletter: false,
+        createdAt: new Date()
+      }
+
       global.readBody.mockResolvedValue(specialCharsInput)
+      mockPrisma.contactSubmission.create.mockResolvedValue(mockSubmission)
 
       const result = await contactHandler({})
       expect(result.success).toBe(true)
@@ -211,6 +270,18 @@ describe('Security Tests', () => {
           }
         }
       }
+
+      const mockSubmission = {
+        id: 'test-id',
+        name: 'Test',
+        email: 'test@example.com',
+        subject: 'Test',
+        message: 'Test message',
+        newsletter: false,
+        createdAt: new Date()
+      }
+      
+      mockPrisma.contactSubmission.create.mockResolvedValue(mockSubmission)
 
       // Should still work (CSRF protection would be added in production)
       const result = await contactHandler(mockEventWithoutHeaders)

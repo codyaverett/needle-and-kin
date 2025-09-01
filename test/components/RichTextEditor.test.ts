@@ -2,10 +2,26 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
 import RichTextEditor from '~/components/RichTextEditor/RichTextEditor.vue'
 
-// Mock document.execCommand
+// Mock document.execCommand and other DOM APIs
 global.document.execCommand = vi.fn(() => true)
 global.document.queryCommandState = vi.fn(() => false)
 global.document.queryCommandValue = vi.fn(() => '')
+
+// Mock more DOM APIs used by RichTextEditor
+Object.defineProperty(window.document, 'queryCommandState', {
+  value: vi.fn(() => false),
+  writable: true
+})
+
+Object.defineProperty(window.document, 'queryCommandValue', {
+  value: vi.fn(() => ''),
+  writable: true
+})
+
+Object.defineProperty(window.document, 'execCommand', {
+  value: vi.fn(() => true),
+  writable: true
+})
 
 describe('RichTextEditor Component', () => {
   beforeEach(() => {

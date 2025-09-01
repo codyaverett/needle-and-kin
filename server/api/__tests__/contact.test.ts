@@ -1,6 +1,21 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import contactHandler from '../contact.post'
 
+// Mock Prisma Client
+vi.mock('@prisma/client', () => {
+  const mockPrismaClient = {
+    contactSubmission: {
+      create: vi.fn()
+    },
+    newsletterSubscription: {
+      upsert: vi.fn()
+    }
+  }
+  return {
+    PrismaClient: vi.fn(() => mockPrismaClient)
+  }
+})
+
 describe('POST /api/contact', () => {
   const mockEvent = {
     node: {
@@ -11,7 +26,9 @@ describe('POST /api/contact', () => {
     }
   }
 
-  beforeEach(() => {
+  let mockPrisma: any
+
+  beforeEach(async () => {
     vi.clearAllMocks()
     global.readBody = vi.fn()
     global.createError = vi.fn((error) => {
@@ -19,8 +36,13 @@ describe('POST /api/contact', () => {
       err.statusCode = error.statusCode
       return err
     })
-    // Mock console.log to avoid test output noise
+    // Mock console.log and console.error to avoid test output noise
     vi.spyOn(console, 'log').mockImplementation(() => {})
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+
+    // Get the mocked Prisma instance
+    const { PrismaClient } = await import('@prisma/client')
+    mockPrisma = new PrismaClient()
   })
 
   it('should successfully submit valid contact form', async () => {
@@ -32,27 +54,35 @@ describe('POST /api/contact', () => {
       newsletter: true
     }
 
+    const mockSubmission = {
+      id: 'test-id',
+      ...validData,
+      createdAt: new Date()
+    }
+
     global.readBody.mockResolvedValue(validData)
+    mockPrisma.contactSubmission.create.mockResolvedValue(mockSubmission)
+    mockPrisma.newsletterSubscription.upsert.mockResolvedValue({})
 
     const result = await contactHandler(mockEvent)
 
     expect(result).toEqual({
       success: true,
       message: 'Contact form submitted successfully',
-      timestamp: expect.any(String)
+      submissionId: 'test-id',
+      timestamp: mockSubmission.createdAt.toISOString()
     })
 
-    expect(console.log).toHaveBeenCalledWith(
-      'Contact form submission:',
-      expect.objectContaining({
+    expect(mockPrisma.contactSubmission.create).toHaveBeenCalledWith({
+      data: {
         name: validData.name,
         email: validData.email,
         subject: validData.subject,
         message: validData.message,
-        newsletter: validData.newsletter,
-        timestamp: expect.any(String)
-      })
-    )
+        newsletter: validData.newsletter
+      }
+    })
+    expect(mockPrisma.newsletterSubscription.upsert).toHaveBeenCalled()
   })
 
   it('should throw 400 error when name is missing', async () => {
@@ -165,6 +195,16 @@ describe('POST /api/contact', () => {
     ]
 
     for (const email of validEmails) {
+      const mockSubmission = {
+        id: `test-id-${email}`,
+        name: 'John',
+        email,
+        subject: 'Test',
+        message: 'Message',
+        newsletter: false,
+        createdAt: new Date()
+      }
+
       global.readBody.mockResolvedValue({
         name: 'John',
         email,
@@ -172,12 +212,24 @@ describe('POST /api/contact', () => {
         message: 'Message'
       })
 
+      mockPrisma.contactSubmission.create.mockResolvedValue(mockSubmission)
+
       const result = await contactHandler(mockEvent)
       expect(result.success).toBe(true)
     }
   })
 
   it('should handle newsletter opt-in as false by default', async () => {
+    const mockSubmission = {
+      id: 'test-id',
+      name: 'John',
+      email: 'john@example.com',
+      subject: 'Test',
+      message: 'Message',
+      newsletter: false,
+      createdAt: new Date()
+    }
+
     global.readBody.mockResolvedValue({
       name: 'John',
       email: 'john@example.com',
@@ -186,14 +238,22 @@ describe('POST /api/contact', () => {
       // newsletter not provided
     })
 
-    await contactHandler(mockEvent)
+    mockPrisma.contactSubmission.create.mockResolvedValue(mockSubmission)
 
-    expect(console.log).toHaveBeenCalledWith(
-      'Contact form submission:',
-      expect.objectContaining({
-        newsletter: undefined
-      })
-    )
+    const result = await contactHandler(mockEvent)
+
+    expect(result.success).toBe(true)
+    expect(mockPrisma.contactSubmission.create).toHaveBeenCalledWith({
+      data: {
+        name: 'John',
+        email: 'john@example.com',
+        subject: 'Test',
+        message: 'Message',
+        newsletter: false
+      }
+    })
+    // Newsletter subscription should not be called when not opted in
+    expect(mockPrisma.newsletterSubscription.upsert).not.toHaveBeenCalled()
   })
 
   it('should handle empty strings as missing fields', async () => {
@@ -211,12 +271,24 @@ describe('POST /api/contact', () => {
   })
 
   it('should handle fields with extra whitespace', async () => {
+    const mockSubmission = {
+      id: 'test-id',
+      name: 'John Doe',
+      email: 'john@example.com',
+      subject: 'Test Subject',
+      message: 'Test Message',
+      newsletter: false,
+      createdAt: new Date()
+    }
+
     global.readBody.mockResolvedValue({
       name: 'John Doe',
-      email: 'john@example.com', // Email with spaces would be invalid
+      email: 'john@example.com',
       subject: 'Test Subject',
       message: 'Test Message'
     })
+
+    mockPrisma.contactSubmission.create.mockResolvedValue(mockSubmission)
 
     const result = await contactHandler(mockEvent)
     expect(result.success).toBe(true)
@@ -224,6 +296,15 @@ describe('POST /api/contact', () => {
 
   it('should handle very long messages', async () => {
     const longMessage = 'A'.repeat(10000)
+    const mockSubmission = {
+      id: 'test-id',
+      name: 'John',
+      email: 'john@example.com',
+      subject: 'Test',
+      message: longMessage,
+      newsletter: false,
+      createdAt: new Date()
+    }
     
     global.readBody.mockResolvedValue({
       name: 'John',
@@ -232,11 +313,23 @@ describe('POST /api/contact', () => {
       message: longMessage
     })
 
+    mockPrisma.contactSubmission.create.mockResolvedValue(mockSubmission)
+
     const result = await contactHandler(mockEvent)
     expect(result.success).toBe(true)
   })
 
   it('should include timestamp in response', async () => {
+    const mockSubmission = {
+      id: 'test-id',
+      name: 'John',
+      email: 'john@example.com',
+      subject: 'Test',
+      message: 'Message',
+      newsletter: false,
+      createdAt: new Date()
+    }
+
     global.readBody.mockResolvedValue({
       name: 'John',
       email: 'john@example.com',
@@ -244,12 +337,11 @@ describe('POST /api/contact', () => {
       message: 'Message'
     })
 
-    const before = new Date()
+    mockPrisma.contactSubmission.create.mockResolvedValue(mockSubmission)
+
     const result = await contactHandler(mockEvent)
-    const after = new Date()
 
     expect(result.timestamp).toBeDefined()
-    const timestamp = new Date(result.timestamp)
-    expect(timestamp >= before && timestamp <= after).toBe(true)
+    expect(result.timestamp).toBe(mockSubmission.createdAt.toISOString())
   })
 })
